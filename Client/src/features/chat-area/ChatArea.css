@@ -1,0 +1,36 @@
+.chat-area {
+  height: 50%;
+  width: 100%;
+}
+
+.messages {
+  height: calc(100% - 56px);
+}
+
+.message-input {
+  width: 100%;
+}
+
+.left {
+  margin-left: 20px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #a8ddfd;
+  width: 60%;
+  text-align: left;
+  font: 400 0.9em "Open Sans";
+  border: 1px solid #97c6e3;
+  border-radius: 10px;
+}
+
+.right {
+  margin-left: 30%;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f8e896;
+  width: 60%;
+  text-align: right;
+  font: 400 0.9em "Open Sans";
+  border: 1px solid #dfd087;
+  border-radius: 10px;
+}
