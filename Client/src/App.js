@@ -11,13 +11,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<CreateMeeting />} />
           <Route exact path="/join" element={<JoinMeeting />} />
-          <Route exact path="/room" element={<MeetingRoom />} />
-          {/* <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/dashboard">
-            <Dashboard />
-          </Route> */}
+          <Route exact path="/room/:roomID" element={<MeetingRoom />} />
         </Routes>
       </div>
     </Router>
