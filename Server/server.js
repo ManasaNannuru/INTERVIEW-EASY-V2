@@ -26,6 +26,9 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
       socket.to(roomId).emit("user-disconnected", userId);
     });
+    socket.on("new-message", (newMessage) => {
+      io.emit("new-message", newMessage);
+    });
   });
 });
 

@@ -8,12 +8,11 @@
   min-width: 50%;
   max-width: 80%;
   width: 80%;
+  height: 100%;
 }
 
 .chat-and-participant-area {
   width: 20%;
-  text-align: center;
-  margin-top: 35%;
 }
 
 .divider {
