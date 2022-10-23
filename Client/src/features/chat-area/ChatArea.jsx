@@ -8,7 +8,7 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import { useCallback, useState } from "react";
 import "./ChatArea.css";
 
-export const ChatArea = ({ allMessages, sendMessage }) => {
+export const ChatArea = ({ allMessages, sendMessage, ownUserName }) => {
   const [message, setMessage] = useState("");
 
   const handleMessageChange = useCallback((event) => {
@@ -23,9 +23,13 @@ export const ChatArea = ({ allMessages, sendMessage }) => {
   return (
     <Paper className="chat-area">
       <div className="messages">
-        {allMessages.map((message, index) => {
+        {allMessages.map((messageObj) => {
           return (
-            <div className={index % 2 === 0 ? "left" : "right"}>{message}</div>
+            <div
+              className={messageObj.userName === ownUserName ? "left" : "right"}
+            >
+              {messageObj.message}
+            </div>
           );
         })}
       </div>

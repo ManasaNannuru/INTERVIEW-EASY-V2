@@ -36,17 +36,14 @@ export const MeetingRoom = memo(
 
     const sendNewMessage = useCallback(
       (message) => {
-        socket.emit("new-message", message);
-        setAllMessages([...allMessages, message]);
+        socket.emit("new-message", message, userName);
+        setAllMessages([...allMessages, { message, userName }]);
       },
-      [socket, allMessages]
+      [socket, allMessages, userName]
     );
 
     useEffect(() => {
       socket.on("new-message", (newMessage) => {
-        console.log("New Message", newMessage);
-        console.log("Existing Messages", allMessages);
-
         setAllMessages([...allMessages, newMessage]);
       });
       return () => {
@@ -136,7 +133,16 @@ export const MeetingRoom = memo(
         />
         <div className="chat-and-participant-area">
           <ParticipantsList socket={socket} />
-          <ChatArea allMessages={allMessages} sendMessage={sendNewMessage} />
+          <Divider
+            orientation="horizontal"
+            flexItem
+            classes={{ root: "horizontal-divider" }}
+          />
+          <ChatArea
+            allMessages={allMessages}
+            sendMessage={sendNewMessage}
+            ownUserName={userName}
+          />
         </div>
       </div>
     );

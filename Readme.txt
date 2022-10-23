@@ -1,1 +1,1 @@
-Contains changes for 'call end' media control.
+Contains changes populating chat in chat area based on user.
