@@ -18,6 +18,7 @@ app.get("/", (req, res) => {
 });
 
 const userListByRoomID = {};
+const messagesByRoomID = {};
 
 io.on("connection", (socket) => {
   socket.emit("registered", socket.id);
@@ -32,13 +33,19 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     socket.to(roomId).emit("user-joined", peerID, userInfo);
     io.in(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
+    io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
 
     socket.on("disconnect", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
     });
 
-    socket.on("new-message", (newMessage) => {
-      socket.to(roomId).emit("new-message", newMessage);
+    socket.on("new-message", (newMessage, userName) => {
+      if (!messagesByRoomID[roomId]) {
+        messagesByRoomID[roomId] = [];
+      }
+      const newMessageObj = { message: newMessage, userName: userName };
+      messagesByRoomID[roomId].push([newMessageObj]);
+      socket.to(roomId).emit("new-message", newMessageObj);
     });
   });
 });

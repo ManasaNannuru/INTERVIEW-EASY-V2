@@ -1,10 +1,11 @@
 .chat-area {
-  height: 58%;
+  height: calc(58% - 1rem);
   width: 100%;
+  margin-top: 1rem;
 }
 
 .messages {
-  height: calc(100% - 56px);
+  height: calc(100% - 5.5rem);
 }
 
 .message-input {
