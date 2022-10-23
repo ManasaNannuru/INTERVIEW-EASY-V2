@@ -1,1 +1,1 @@
-Contains changes populating chat in chat area based on user.
+Contains changes audio and video controls

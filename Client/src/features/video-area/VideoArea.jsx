@@ -1,8 +1,11 @@
 import { useEffect, memo, useRef } from "react";
 import { Chip, IconButton } from "@mui/material";
-// import CallIcon from "@mui/icons-material/Call";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import Button from "@mui/material/Button";
 import CallEndIcon from "@mui/icons-material/CallEnd";
+import MicOnIcon from "@mui/icons-material/Mic";
+import MicOffIcon from "@mui/icons-material/MicOff";
 
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -15,13 +18,35 @@ import { useCallback } from "react";
 import { useState } from "react";
 
 export const VideoArea = memo(
-  ({ incomingVideoStream, ownVideoStream, ownUserName, otherUserName }) => {
+  ({
+    incomingVideoStream,
+    ownVideoStream,
+    ownUserName,
+    otherUserName,
+    onCallEnd,
+  }) => {
     const ownVideoRef = useRef();
     const incomingVideoRef = useRef();
     const navigate = useNavigate();
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState();
+    const [audioEnabled, setAudioEnabled] = useState(false);
+    const [videoEnabled, setVideoEnabled] = useState(false);
 
-    const onCallEnd = useCallback(() => {
+    const toggleAudio = useCallback(() => {
+      ownVideoStream.getAudioTracks().forEach((audioTrack) => {
+        audioTrack.enabled = !audioTrack.enabled;
+        setAudioEnabled(audioTrack.enabled);
+      });
+    }, [ownVideoStream]);
+
+    const toggleVideo = useCallback(() => {
+      ownVideoStream.getVideoTracks().forEach((videoTrack) => {
+        videoTrack.enabled = !videoTrack.enabled;
+        setVideoEnabled(videoTrack.enabled);
+      });
+    }, [ownVideoStream]);
+
+    const onCallEndClick = useCallback(() => {
       setOpenConfirmationDialog(true);
     }, []);
 
@@ -31,8 +56,9 @@ export const VideoArea = memo(
 
     const handleOkDialog = useCallback(() => {
       setOpenConfirmationDialog(false);
+      onCallEnd();
       navigate("/");
-    }, [navigate]);
+    }, [navigate, onCallEnd]);
 
     useEffect(() => {
       if (incomingVideoStream)
@@ -71,7 +97,22 @@ export const VideoArea = memo(
           {/* <IconButton sx={{ color: "white" }}>
             <CallIcon fontSize="large" />
           </IconButton> */}
-          <IconButton sx={{ color: "white" }} onClick={onCallEnd}>
+
+          <IconButton sx={{ color: "white" }} onClick={toggleAudio}>
+            {audioEnabled ? (
+              <MicOnIcon fontSize="large" />
+            ) : (
+              <MicOffIcon fontSize="large" />
+            )}
+          </IconButton>
+          <IconButton sx={{ color: "white" }} onClick={toggleVideo}>
+            {videoEnabled ? (
+              <VideocamIcon fontSize="large" />
+            ) : (
+              <VideocamOffIcon fontSize="large" />
+            )}
+          </IconButton>
+          <IconButton sx={{ color: "white" }} onClick={onCallEndClick}>
             <CallEndIcon fontSize="large" />
           </IconButton>
         </div>

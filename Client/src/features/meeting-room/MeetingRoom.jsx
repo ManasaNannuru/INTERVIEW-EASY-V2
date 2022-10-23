@@ -42,6 +42,13 @@ export const MeetingRoom = memo(
       [socket, allMessages, userName]
     );
 
+    const endCall = useCallback(() => {
+      ownVideoStream.getTracks().forEach((track) => track.stop());
+      setOwnVideoStream(null);
+      myPeer.disconnect();
+      socket.emit("disconnect-user");
+    }, [myPeer, ownVideoStream, socket]);
+
     useEffect(() => {
       socket.on("new-message", (newMessage) => {
         setAllMessages([...allMessages, newMessage]);
@@ -98,6 +105,9 @@ export const MeetingRoom = memo(
             video: true,
           })
           .then((ownStream) => {
+            ownStream.getVideoTracks(
+              (videoTrack) => (videoTrack.enabled = true)
+            );
             setOwnVideoStream(ownStream);
             myPeer.on("call", (call) => {
               console.log("Receiving Call");
@@ -124,6 +134,7 @@ export const MeetingRoom = memo(
             ownVideoStream={ownVideoStream}
             ownUserName={userName}
             otherUserName={otherUserInfo.userName}
+            onCallEnd={endCall}
           />
         </div>
         <Divider
