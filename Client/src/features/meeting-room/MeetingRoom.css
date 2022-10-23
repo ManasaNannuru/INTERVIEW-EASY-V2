@@ -6,13 +6,13 @@
 
 .video-area {
   min-width: 50%;
-  max-width: 80%;
-  width: 80%;
+  max-width: 70%;
+  width: 70%;
   height: 100%;
 }
 
 .chat-and-participant-area {
-  width: 20%;
+  width: 30%;
 }
 
 .divider {

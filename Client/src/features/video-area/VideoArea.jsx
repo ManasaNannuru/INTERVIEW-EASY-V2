@@ -18,13 +18,23 @@ export const VideoArea = memo(
 
     return (
       <div className="videos">
-        <div className="video">
-          <video ref={ownVideoRef} playsInline autoPlay></video>
+        <div className={incomingVideoStream !== null ? "video-2" : "video-1"}>
+          <video
+            style={{ width: "100%" }}
+            ref={ownVideoRef}
+            playsInline
+            autoPlay
+          ></video>
           <Chip className="user-info" label={ownUserName} />
         </div>
         {incomingVideoStream !== null && (
-          <div className="video">
-            <video ref={incomingVideoRef} playsInline autoPlay></video>
+          <div className="video-2">
+            <video
+              style={{ width: "100%" }}
+              ref={incomingVideoRef}
+              playsInline
+              autoPlay
+            ></video>
             <Chip className="user-info" label={otherUserName} />
           </div>
         )}

@@ -1,6 +1,12 @@
-.video {
+.video-1 {
   background-color: #222;
-  min-width: 50%;
+  width: 100%;
+  position: relative;
+}
+
+.video-2 {
+  background-color: #222;
+  width: 50%;
   position: relative;
 }
 
