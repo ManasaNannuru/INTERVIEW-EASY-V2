@@ -1,96 +1,143 @@
 import { Divider } from "@mui/material";
 import { memo } from "react";
 import { VideoArea } from "../video-area/VideoArea";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./MeetingRoom.css";
 import { useEffect } from "react";
 import { useState } from "react";
-import { io } from "socket.io-client";
-import Peer from "peerjs-client";
 import { ChatArea } from "../chat-area/ChatArea";
 import { useCallback } from "react";
 
-const socket = io("http://localhost:3001");
-const myPeer = new Peer(undefined, {
-  host: "/",
-  port: "5001",
-});
+let streamRequestedAlready = false;
 
-export const MeetingRoom = memo(() => {
-  const { roomID } = useParams();
-  const [ownVideoStream, setOwnVideoStream] = useState(null);
-  const [incomingVideoStream, setIncomingVideoStream] = useState(null);
-  const [allMessages, setAllMessages] = useState([]);
+export const MeetingRoom = memo(
+  ({
+    userInfo,
+    setRoomID,
+    socket,
+    myPeer,
+    setOtherUserInfo,
+    otherUserInfo,
+  }) => {
+    const { roomID } = useParams();
+    const { userName } = userInfo;
+    const [ownVideoStream, setOwnVideoStream] = useState(null);
+    const [incomingVideoStream, setIncomingVideoStream] = useState(null);
+    const [allMessages, setAllMessages] = useState([]);
+    const navigate = useNavigate();
 
-  const sendNewMessage = useCallback((message) => {
-    socket.emit("new-message", message);
-  }, []);
+    useEffect(() => {
+      if (!userName || !roomID) {
+        setRoomID(roomID);
+        navigate("/");
+      }
+    }, [navigate, roomID, setRoomID, userName]);
 
-  useEffect(() => {
-    socket.on("new-message", (newMessage) => {
-      setAllMessages([...allMessages, newMessage]);
-    });
-    return () => {
-      socket.removeListener("new-message");
-    };
-  }, [allMessages]);
+    const sendNewMessage = useCallback(
+      (message) => {
+        socket.emit("new-message", message);
+        setAllMessages([...allMessages, message]);
+      },
+      [socket, allMessages]
+    );
 
-  useEffect(() => {
-    if (ownVideoStream) {
-      socket.on("user-joined", (userId) => {
-        const call = myPeer.call(userId, ownVideoStream);
-        call.on("stream", (otherVideoStream) => {
-          setIncomingVideoStream(otherVideoStream);
-        });
-        call.on("close", () => {
-          setIncomingVideoStream(null);
-        });
+    useEffect(() => {
+      socket.on("new-message", (newMessage) => {
+        console.log("New Message", newMessage);
+        console.log("Existing Messages", allMessages);
+
+        setAllMessages([...allMessages, newMessage]);
       });
-    }
+      return () => {
+        socket.removeListener("new-message");
+      };
+    }, [allMessages, socket]);
 
-    myPeer.on("open", (id) => {
-      socket.emit("room-is-ready", roomID, id);
-    });
-
-    socket.on("user-disconnected", () => {
-      setIncomingVideoStream(null);
-    });
-  }, [ownVideoStream, roomID]);
-
-  useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: true,
-        video: true,
-      })
-      .then((stream) => {
-        setOwnVideoStream(stream);
-        myPeer.on("call", (call) => {
-          call.answer(stream);
+    useEffect(() => {
+      if (userName && roomID && ownVideoStream) {
+        socket.on("user-joined", (joinedUserPeerID, joinedUserInfo) => {
+          const call = myPeer.call(joinedUserPeerID, ownVideoStream);
+          console.log("User joined", joinedUserInfo);
+          setOtherUserInfo(joinedUserInfo);
+          console.log(
+            "Calling user with peer id: ",
+            joinedUserPeerID,
+            ownVideoStream
+          );
 
           call.on("stream", (otherVideoStream) => {
+            console.log("Call Answered");
             setIncomingVideoStream(otherVideoStream);
           });
-        });
-      })
-      .catch((error) => {
-        alert("Please allow access to video and audio to continue");
-      });
-  }, [roomID]);
 
-  return (
-    <div className="meeting-room">
-      <div className="video-area">
-        <VideoArea
-          incomingVideoStream={incomingVideoStream}
-          ownVideoStream={ownVideoStream}
+          call.on("close", () => {
+            console.log("Call Ended");
+            setIncomingVideoStream(null);
+          });
+        });
+      }
+
+      socket.on("user-disconnected", (disconnectedUserInfo) => {
+        setIncomingVideoStream(null);
+        console.log("Disconnected User info", disconnectedUserInfo);
+      });
+    }, [
+      myPeer,
+      ownVideoStream,
+      roomID,
+      setOtherUserInfo,
+      socket,
+      userInfo,
+      userName,
+    ]);
+
+    useEffect(() => {
+      if (!streamRequestedAlready && userName && roomID) {
+        streamRequestedAlready = true;
+        navigator.mediaDevices
+          .getUserMedia({
+            audio: true,
+            video: true,
+          })
+          .then((ownStream) => {
+            setOwnVideoStream(ownStream);
+            myPeer.on("call", (call) => {
+              console.log("Receiving Call");
+              call.answer(ownStream);
+
+              call.on("stream", (otherVideoStream) => {
+                setIncomingVideoStream(otherVideoStream);
+              });
+            });
+            console.log("Rom is ready emitted");
+            socket.emit("room-is-ready", roomID, myPeer.id, userInfo);
+          })
+          .catch((error) => {
+            alert("Please allow access to video and audio to continue");
+          });
+      }
+    }, [myPeer, roomID, socket, userInfo, userName]);
+
+    return (
+      <div className="meeting-room">
+        <div className="video-area">
+          <VideoArea
+            incomingVideoStream={incomingVideoStream}
+            ownVideoStream={ownVideoStream}
+            ownUserName={userName}
+            otherUserName={otherUserInfo.userName}
+          />
+        </div>
+        <Divider
+          orientation="vertical"
+          flexItem
+          classes={{ root: "divider" }}
         />
+        <div className="chat-and-participant-area">
+          <div style={{ height: "50%" }}>Participants Area</div>
+          <ChatArea allMessages={allMessages} sendMessage={sendNewMessage} />
+        </div>
       </div>
-      <Divider orientation="vertical" flexItem classes={{ root: "divider" }} />
-      <div className="chat-and-participant-area">
-        <div style={{ height: "50%" }}>Participants Area</div>
-        <ChatArea allMessages={allMessages} sendMessage={sendNewMessage} />
-      </div>
-    </div>
-  );
-});
+    );
+  }
+);
