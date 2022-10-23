@@ -66,7 +66,15 @@ export const VideoArea = memo(
     }, [incomingVideoStream]);
 
     useEffect(() => {
-      if (ownVideoStream) ownVideoRef.current.srcObject = ownVideoStream;
+      if (ownVideoStream) {
+        ownVideoRef.current.srcObject = ownVideoStream;
+        ownVideoStream.getAudioTracks().forEach((audioTrack) => {
+          setAudioEnabled(audioTrack.enabled);
+        });
+        ownVideoStream.getVideoTracks().forEach((videoTrack) => {
+          setVideoEnabled(videoTrack.enabled);
+        });
+      }
     }, [ownVideoStream]);
 
     return (
