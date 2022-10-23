@@ -1,1 +1,1 @@
-Contains changes to update participants list
+Contains changes for 'call end' media control.
