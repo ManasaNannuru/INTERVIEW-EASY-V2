@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { ChatArea } from "../chat-area/ChatArea";
 import { useCallback } from "react";
+import { ParticipantsList } from "../participants-list/ParticipantsList";
 
 let streamRequestedAlready = false;
 
@@ -134,7 +135,7 @@ export const MeetingRoom = memo(
           classes={{ root: "divider" }}
         />
         <div className="chat-and-participant-area">
-          <div style={{ height: "50%" }}>Participants Area</div>
+          <ParticipantsList socket={socket} />
           <ChatArea allMessages={allMessages} sendMessage={sendNewMessage} />
         </div>
       </div>

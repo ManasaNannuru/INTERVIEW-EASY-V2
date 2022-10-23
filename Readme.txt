@@ -1,1 +1,1 @@
-Contains changes for meeting room and join functionality.
+Contains changes to update participants list

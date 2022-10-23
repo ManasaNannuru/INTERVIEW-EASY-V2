@@ -24,14 +24,14 @@ io.on("connection", (socket) => {
 
   socket.on("room-is-ready", (roomId, peerID, userInfo) => {
     if (!userListByRoomID[roomId]) {
-      userListByRoomID[roomId] = [];
+      userListByRoomID[roomId] = {};
     }
 
-    userListByRoomID[roomId].push(userInfo);
+    userListByRoomID[roomId][userInfo.userName] = userInfo.email;
 
     socket.join(roomId);
     socket.to(roomId).emit("user-joined", peerID, userInfo);
-    socket.to(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
+    io.in(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
 
     socket.on("disconnect", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
