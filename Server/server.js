@@ -17,17 +17,28 @@ app.get("/", (req, res) => {
   res.send("server is running");
 });
 
+const userListByRoomID = {};
+
 io.on("connection", (socket) => {
   socket.emit("registered", socket.id);
 
-  socket.on("room-is-ready", (roomId, userId) => {
+  socket.on("room-is-ready", (roomId, peerID, userInfo) => {
+    if (!userListByRoomID[roomId]) {
+      userListByRoomID[roomId] = [];
+    }
+
+    userListByRoomID[roomId].push(userInfo);
+
     socket.join(roomId);
-    socket.to(roomId).emit("user-joined", userId);
+    socket.to(roomId).emit("user-joined", peerID, userInfo);
+    socket.to(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
+
     socket.on("disconnect", () => {
-      socket.to(roomId).emit("user-disconnected", userId);
+      socket.to(roomId).emit("user-disconnected", userInfo);
     });
+
     socket.on("new-message", (newMessage) => {
-      io.emit("new-message", newMessage);
+      socket.to(roomId).emit("new-message", newMessage);
     });
   });
 });

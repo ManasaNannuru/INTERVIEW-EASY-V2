@@ -1,10 +1,19 @@
 .video {
   background-color: #222;
-  width: 100%;
+  min-width: 50%;
+  position: relative;
 }
 
 .videos {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
+  width: 100%;
+}
+
+.user-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: white !important;
 }
