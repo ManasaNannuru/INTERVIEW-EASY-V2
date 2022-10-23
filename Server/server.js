@@ -35,8 +35,10 @@ io.on("connection", (socket) => {
     io.in(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
     io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect-user", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
+      delete userListByRoomID[roomId][userInfo.userName];
+      io.in(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
     });
 
     socket.on("new-message", (newMessage, userName) => {
