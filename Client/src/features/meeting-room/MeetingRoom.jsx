@@ -61,7 +61,11 @@ export const MeetingRoom = memo(
     useEffect(() => {
       if (userName && roomID && ownVideoStream) {
         socket.on("user-joined", (joinedUserPeerID, joinedUserInfo) => {
-          const call = myPeer.call(joinedUserPeerID, ownVideoStream);
+          const call = myPeer.call(
+            joinedUserPeerID,
+            ownVideoStream,
+            joinedUserInfo
+          );
           console.log("User joined", joinedUserInfo);
           setOtherUserInfo(joinedUserInfo);
           console.log(
