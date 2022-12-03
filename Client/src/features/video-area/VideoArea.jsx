@@ -1,144 +1,196 @@
-import { useEffect, memo, useRef } from "react";
-import { Chip, IconButton } from "@mui/material";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import Button from "@mui/material/Button";
 import CallEndIcon from "@mui/icons-material/CallEnd";
 import MicOnIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
-
+import VideocamIcon from "@mui/icons-material/Videocam";
+import VideocamOffIcon from "@mui/icons-material/VideocamOff";
+import { Chip, IconButton } from "@mui/material";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Peer from "peerjs-client";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { v4 as uuid4 } from "uuid";
+import { SocketContext } from "../../socket-context";
+import { onRoomIsReady } from "../../socket-context/EventEmitters";
+import { UserDetailsContext } from "../../user-context";
 import "./VideoArea.css";
-import { useNavigate } from "react-router-dom";
-import { useCallback } from "react";
-import { useState } from "react";
 
-export const VideoArea = memo(
-  ({
-    incomingVideoStream,
-    ownVideoStream,
-    ownUserName,
-    otherUserName,
-    onCallEnd,
-  }) => {
-    const ownVideoRef = useRef();
-    const incomingVideoRef = useRef();
-    const navigate = useNavigate();
-    const [openConfirmationDialog, setOpenConfirmationDialog] = useState();
-    const [audioEnabled, setAudioEnabled] = useState(false);
-    const [videoEnabled, setVideoEnabled] = useState(false);
+const myPeer = new Peer(uuid4(), {
+  host: "/",
+  port: "5001",
+});
 
-    const toggleAudio = useCallback(() => {
-      ownVideoStream.getAudioTracks().forEach((audioTrack) => {
-        audioTrack.enabled = !audioTrack.enabled;
-        setAudioEnabled(audioTrack.enabled);
-      });
-    }, [ownVideoStream]);
+let streamAlreadyRequested = false;
 
-    const toggleVideo = useCallback(() => {
-      ownVideoStream.getVideoTracks().forEach((videoTrack) => {
-        videoTrack.enabled = !videoTrack.enabled;
-        setVideoEnabled(videoTrack.enabled);
-      });
-    }, [ownVideoStream]);
+export const VideoArea = memo(({ roomID, exitRoom }) => {
+  const [ownUserInfo] = useContext(UserDetailsContext);
+  const { otherUserInfo, otherUserPeerID } = useContext(SocketContext);
+  const ownVideoRef = useRef();
+  const incomingVideoRef = useRef();
+  const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(false);
+  const [ownVideoStream, setOwnVideoStream] = useState();
+  const [incomingVideoStream, setIncomingVideoStream] = useState();
 
-    const onCallEndClick = useCallback(() => {
-      setOpenConfirmationDialog(true);
-    }, []);
+  const toggleAudio = useCallback(() => {
+    ownVideoStream.getAudioTracks().forEach((audioTrack) => {
+      audioTrack.enabled = !audioTrack.enabled;
+      setAudioEnabled(audioTrack.enabled);
+    });
+  }, [ownVideoStream]);
 
-    const handleCancelDialog = useCallback(() => {
-      setOpenConfirmationDialog(false);
-    }, []);
+  const toggleVideo = useCallback(() => {
+    ownVideoStream.getVideoTracks().forEach((videoTrack) => {
+      videoTrack.enabled = !videoTrack.enabled;
+      setVideoEnabled(videoTrack.enabled);
+    });
+  }, [ownVideoStream]);
 
-    const handleOkDialog = useCallback(() => {
-      setOpenConfirmationDialog(false);
-      onCallEnd();
-      navigate("/");
-    }, [navigate, onCallEnd]);
+  const onCallEndClick = useCallback(() => {
+    setOpenConfirmationDialog(true);
+  }, []);
 
-    useEffect(() => {
-      if (incomingVideoStream)
-        incomingVideoRef.current.srcObject = incomingVideoStream;
-    }, [incomingVideoStream]);
+  const handleCancelDialog = useCallback(() => {
+    setOpenConfirmationDialog(false);
+  }, []);
 
-    useEffect(() => {
-      if (ownVideoStream) {
-        ownVideoRef.current.srcObject = ownVideoStream;
-        ownVideoStream.getAudioTracks().forEach((audioTrack) => {
-          setAudioEnabled(audioTrack.enabled);
+  const handleOkDialog = useCallback(() => {
+    setOpenConfirmationDialog(false);
+    ownVideoStream.getTracks().forEach((track) => track.stop());
+    setOwnVideoStream(null);
+    myPeer.disconnect();
+    ownVideoRef.current.srcObject = null;
+    exitRoom();
+  }, [exitRoom, ownVideoStream]);
+
+  useEffect(() => {
+    if (roomID && ownUserInfo.userName && !streamAlreadyRequested) {
+      streamAlreadyRequested = true;
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video: true,
+        })
+        .then((ownStream) => {
+          setAudioEnabled(
+            !ownStream
+              .getAudioTracks()
+              .some((audioTrack) => !audioTrack.enabled)
+          );
+          setVideoEnabled(
+            !ownStream
+              .getVideoTracks()
+              .some((videoTrack) => !videoTrack.enabled)
+          );
+          setOwnVideoStream(ownStream);
+          ownVideoRef.current.srcObject = ownStream;
+          myPeer.on("call", (call) => {
+            call.answer(ownStream);
+            call.on("stream", (otherVideoStream) => {
+              setIncomingVideoStream(otherVideoStream);
+            });
+          });
+
+          onRoomIsReady(roomID, myPeer.id, ownUserInfo);
+        })
+        .catch((error) => {
+          alert("Please allow access to video and audio to continue");
         });
-        ownVideoStream.getVideoTracks().forEach((videoTrack) => {
-          setVideoEnabled(videoTrack.enabled);
-        });
-      }
-    }, [ownVideoStream]);
+    }
+  }, [ownUserInfo, roomID]);
 
-    return (
-      <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
-        <div className="videos">
-          <div className={incomingVideoStream !== null ? "video-2" : "video-1"}>
+  useEffect(() => {
+    if (otherUserInfo.userName && otherUserPeerID && ownVideoStream) {
+      const call = myPeer.call(otherUserPeerID, ownVideoStream, otherUserInfo);
+
+      call.on("stream", (otherVideoStream) => {
+        setIncomingVideoStream(otherVideoStream);
+      });
+
+      call.on("close", () => {
+        setIncomingVideoStream(null);
+        if (incomingVideoRef.current) incomingVideoRef.current.srcObject = null;
+      });
+    } else {
+      setIncomingVideoStream(null);
+      if (incomingVideoRef.current) incomingVideoRef.current.srcObject = null;
+    }
+  }, [otherUserInfo, otherUserPeerID, ownVideoStream]);
+
+  useEffect(() => {
+    if (incomingVideoStream !== null) {
+      incomingVideoRef.current.srcObject = incomingVideoStream;
+    }
+  }, [incomingVideoStream]);
+
+  return (
+    <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
+      <div className="videos">
+        <div className={incomingVideoStream !== null ? "video-2" : "video-1"}>
+          <video
+            style={{ width: "100%", height: "100%" }}
+            ref={ownVideoRef}
+            playsInline
+            autoPlay
+          ></video>
+          <Chip className="user-info" label={ownUserInfo.userName} />
+        </div>
+        {incomingVideoStream !== null && (
+          <div className="video-2">
             <video
               style={{ width: "100%", height: "100%" }}
-              ref={ownVideoRef}
+              ref={incomingVideoRef}
               playsInline
               autoPlay
             ></video>
-            <Chip className="user-info" label={ownUserName} />
+            <Chip className="user-info" label={otherUserInfo.userName} />
           </div>
-          {incomingVideoStream !== null && (
-            <div className="video-2">
-              <video
-                style={{ width: "100%", height: "100%" }}
-                ref={incomingVideoRef}
-                playsInline
-                autoPlay
-              ></video>
-              <Chip className="user-info" label={otherUserName} />
-            </div>
-          )}
-        </div>
-        <div className="media-controls">
-          {/* <IconButton sx={{ color: "white" }}>
-            <CallIcon fontSize="large" />
-          </IconButton> */}
-
-          <IconButton sx={{ color: "white" }} onClick={toggleAudio}>
-            {audioEnabled ? (
-              <MicOnIcon fontSize="large" />
-            ) : (
-              <MicOffIcon fontSize="large" />
-            )}
-          </IconButton>
-          <IconButton sx={{ color: "white" }} onClick={toggleVideo}>
-            {videoEnabled ? (
-              <VideocamIcon fontSize="large" />
-            ) : (
-              <VideocamOffIcon fontSize="large" />
-            )}
-          </IconButton>
-          <IconButton sx={{ color: "white" }} onClick={onCallEndClick}>
-            <CallEndIcon fontSize="large" />
-          </IconButton>
-        </div>
-        <Dialog open={openConfirmationDialog} onClose={handleCancelDialog}>
-          <DialogTitle>End meeting</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to end the meeting?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCancelDialog}>Cancel</Button>
-            <Button onClick={handleOkDialog} autoFocus>
-              Ok
-            </Button>
-          </DialogActions>
-        </Dialog>
+        )}
       </div>
-    );
-  }
-);
+      <div className="media-controls">
+        <IconButton sx={{ color: "white" }} onClick={toggleAudio}>
+          {audioEnabled ? (
+            <MicOnIcon fontSize="large" />
+          ) : (
+            <MicOffIcon fontSize="large" />
+          )}
+        </IconButton>
+        <IconButton sx={{ color: "white" }} onClick={toggleVideo}>
+          {videoEnabled ? (
+            <VideocamIcon fontSize="large" />
+          ) : (
+            <VideocamOffIcon fontSize="large" />
+          )}
+        </IconButton>
+        <IconButton sx={{ color: "white" }} onClick={onCallEndClick}>
+          <CallEndIcon fontSize="large" />
+        </IconButton>
+      </div>
+      <Dialog open={openConfirmationDialog} onClose={handleCancelDialog}>
+        <DialogTitle>End meeting</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to end the meeting?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDialog}>Cancel</Button>
+          <Button onClick={handleOkDialog} autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+});

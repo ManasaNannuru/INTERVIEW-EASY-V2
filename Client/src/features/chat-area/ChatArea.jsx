@@ -7,8 +7,14 @@ import {
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import { useCallback, useState } from "react";
 import "./ChatArea.css";
+import { useContext } from "react";
+import { SocketContext } from "../../socket-context";
+import { onNewMessage } from "../../socket-context/EventEmitters";
+import { UserDetailsContext } from "../../user-context";
 
-export const ChatArea = ({ allMessages, sendMessage, ownUserName }) => {
+export const ChatArea = () => {
+  const { messages } = useContext(SocketContext);
+  const [ownUserInfo] = useContext(UserDetailsContext);
   const [message, setMessage] = useState("");
 
   const handleMessageChange = useCallback((event) => {
@@ -16,17 +22,19 @@ export const ChatArea = ({ allMessages, sendMessage, ownUserName }) => {
   }, []);
 
   const onEnter = useCallback(() => {
-    sendMessage(message);
+    onNewMessage(message, ownUserInfo.userName);
     setMessage("");
-  }, [message, sendMessage]);
+  }, [message, ownUserInfo]);
 
   return (
     <Paper className="chat-area">
       <div className="messages">
-        {allMessages.map((messageObj) => {
+        {messages?.map((messageObj) => {
           return (
             <div
-              className={messageObj.userName === ownUserName ? "left" : "right"}
+              className={
+                messageObj.userName === ownUserInfo.userName ? "left" : "right"
+              }
             >
               {messageObj.message}
             </div>

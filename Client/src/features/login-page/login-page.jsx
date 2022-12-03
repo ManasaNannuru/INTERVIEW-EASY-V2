@@ -1,16 +1,19 @@
 import { Box, Button, TextField } from "@mui/material";
+import { useContext } from "react";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid4 } from "uuid";
+import { UserDetailsContext } from "../../user-context";
 import "./login-page.css";
 
-export const LoginPage = ({ setRoomID, setUserInfo, roomID }) => {
+export const LoginPage = ({ setRoomID, roomID }) => {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
+  const [, setOwnUserInfo] = useContext(UserDetailsContext);
   const navigate = useNavigate();
 
   const onSubmit = useCallback(() => {
-    setUserInfo({ userName, email });
+    setOwnUserInfo({ userName, email });
     if (roomID) {
       navigate(`/room/${roomID}`);
     } else {
@@ -18,7 +21,7 @@ export const LoginPage = ({ setRoomID, setUserInfo, roomID }) => {
       setRoomID(newRoomID);
       navigate(`/room/${newRoomID}`);
     }
-  }, [setUserInfo, userName, email, roomID, navigate, setRoomID]);
+  }, [setOwnUserInfo, userName, email, roomID, navigate, setRoomID]);
 
   const onEmailChange = useCallback((event) => {
     setEmail(event.target.value);
@@ -49,7 +52,12 @@ export const LoginPage = ({ setRoomID, setUserInfo, roomID }) => {
         value={userName}
         onChange={onUserNameChange}
       />
-      <Button variant="contained" size="large" onClick={onSubmit}>
+      <Button
+        variant="contained"
+        size="large"
+        onClick={onSubmit}
+        disabled={!userName || !email}
+      >
         {roomID ? "Join Meeting" : "Create Meeting"}
       </Button>
     </Box>
