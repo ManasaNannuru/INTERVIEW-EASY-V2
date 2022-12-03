@@ -1,1 +1,1 @@
-Code cleanup and refactoring
+Welcome page. Styles pending.

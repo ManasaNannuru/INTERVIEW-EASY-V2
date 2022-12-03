@@ -79,7 +79,9 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
       streamAlreadyRequested = true;
       navigator.mediaDevices
         .getUserMedia({
-          audio: true,
+          audio: {
+            echoCancellation: true,
+          },
           video: true,
         })
         .then((ownStream) => {
@@ -143,6 +145,7 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
             ref={ownVideoRef}
             playsInline
             autoPlay
+            muted="muted"
           ></video>
           <Chip className="user-info" label={ownUserInfo.userName} />
         </div>
@@ -153,6 +156,7 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
               ref={incomingVideoRef}
               playsInline
               autoPlay
+              muted="muted"
             ></video>
             <Chip className="user-info" label={otherUserInfo.userName} />
           </div>

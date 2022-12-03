@@ -5,6 +5,7 @@ import { LoginPage } from "./features/login-page/login-page";
 import { MeetingRoom } from "./features/meeting-room/MeetingRoom";
 import UserDetailsProvider from "./user-context";
 import { SocketProvider } from "./socket-context";
+import { WelcomePage } from "./features/welcome-page/WelcomePage";
 
 function App() {
   const [roomID, setRoomID] = useState();
@@ -14,6 +15,7 @@ function App() {
       <div className="App">
         <UserDetailsProvider>
           <Routes>
+            <Route exact path="/welcome" element={<WelcomePage />} />
             <Route
               exact
               path="/"
