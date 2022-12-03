@@ -25,6 +25,7 @@ export const MeetingRoom = memo(
     const [ownVideoStream, setOwnVideoStream] = useState(null);
     const [incomingVideoStream, setIncomingVideoStream] = useState(null);
     const [allMessages, setAllMessages] = useState([]);
+    const [userList, setUserList] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -59,6 +60,19 @@ export const MeetingRoom = memo(
     }, [allMessages, socket]);
 
     useEffect(() => {
+      socket.on("list-of-users-updated", (updatedUsersList, joinedUserInfo) => {
+        const updatedUsers = [];
+        for (let user in updatedUsersList) {
+          updatedUsers.push(user);
+          if (user !== userName) {
+            setOtherUserInfo({ userName: user, email: updatedUsersList[user] });
+          }
+        }
+        setUserList(updatedUsers);
+      });
+    }, [setOtherUserInfo, socket, userName]);
+
+    useEffect(() => {
       if (userName && roomID && ownVideoStream) {
         socket.on("user-joined", (joinedUserPeerID, joinedUserInfo) => {
           const call = myPeer.call(
@@ -66,8 +80,6 @@ export const MeetingRoom = memo(
             ownVideoStream,
             joinedUserInfo
           );
-          console.log("User joined", joinedUserInfo);
-          setOtherUserInfo(joinedUserInfo);
           console.log(
             "Calling user with peer id: ",
             joinedUserPeerID,
@@ -147,7 +159,7 @@ export const MeetingRoom = memo(
           classes={{ root: "divider" }}
         />
         <div className="chat-and-participant-area">
-          <ParticipantsList socket={socket} />
+          <ParticipantsList users={userList} />
           <Divider
             orientation="horizontal"
             flexItem

@@ -31,7 +31,7 @@ io.on("connection", (socket) => {
     userListByRoomID[roomId][userInfo.userName] = userInfo.email;
 
     socket.join(roomId);
-    socket.to(roomId).emit("user-joined", peerID, userInfo);
+    socket.to(roomId).emit("user-joined", peerID);
     io.in(roomId).emit("list-of-users-updated", userListByRoomID[roomId]);
     io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
 

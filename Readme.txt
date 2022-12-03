@@ -1,1 +1,2 @@
-Contains changes audio and video controls
+Bug fix:
+Other user's name not visible for joined user.
