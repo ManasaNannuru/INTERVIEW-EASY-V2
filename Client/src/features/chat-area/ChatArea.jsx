@@ -22,42 +22,49 @@ export const ChatArea = () => {
   }, []);
 
   const onEnter = useCallback(() => {
-    onNewMessage(message, ownUserInfo.userName);
-    setMessage("");
+    if (message) {
+      onNewMessage(message, ownUserInfo.userName);
+      setMessage("");
+    }
   }, [message, ownUserInfo]);
 
   return (
-    <Paper className="chat-area">
-      <div className="messages">
-        {messages?.map((messageObj) => {
-          return (
-            <div
-              className={
-                messageObj.userName === ownUserInfo.userName ? "left" : "right"
-              }
-            >
-              {messageObj.message}
-            </div>
-          );
-        })}
-      </div>
-      <OutlinedInput
-        className="message-input"
-        value={message}
-        onChange={handleMessageChange}
-        onSubmit={onEnter}
-        endAdornment={
-          <InputAdornment>
-            <IconButton
-              aria-label="toggle password visibility"
-              onClick={onEnter}
-              edge="end"
-            >
-              <SendRoundedIcon />
-            </IconButton>
-          </InputAdornment>
-        }
-      />
-    </Paper>
+    <>
+      <div className="chat-header">Chat</div>
+      <Paper className="chat-area">
+        <div className="messages">
+          {messages?.map((messageObj) => {
+            return (
+              <div
+                className={
+                  messageObj.userName === ownUserInfo.userName
+                    ? "left"
+                    : "right"
+                }
+              >
+                {messageObj.message}
+              </div>
+            );
+          })}
+        </div>
+        <OutlinedInput
+          className="message-input"
+          value={message}
+          onChange={handleMessageChange}
+          onSubmit={onEnter}
+          endAdornment={
+            <InputAdornment>
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={onEnter}
+                edge="end"
+              >
+                <SendRoundedIcon />
+              </IconButton>
+            </InputAdornment>
+          }
+        />
+      </Paper>
+    </>
   );
 };

@@ -3,5 +3,17 @@
   flex-direction: column;
   width: 25rem;
   margin: auto;
-  margin-top: 10%;
+  margin-top: 2%;
+}
+
+.LoginPage_heading {
+  padding: 30px;
+  padding-bottom: 0px;
+  font-size: 48px;
+  color: #1976d2;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5%;
 }
