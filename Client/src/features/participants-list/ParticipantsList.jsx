@@ -32,7 +32,7 @@ export const ParticipantsList = () => {
                   : ""
               }
             />
-            <ListItemText primary={otherUserInfo?.userName} />
+            <ListItemText primary={otherUserInfo.userName} />
           </ListItem>
         )}
       </List>
