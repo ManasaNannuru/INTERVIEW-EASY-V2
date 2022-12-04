@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useContext } from "react";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,6 @@ import "./login-page.css";
 export const LoginPage = ({ setRoomID, roomID }) => {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
-  const [isEmailValid, setValid] = useState(true);
   const [, setOwnUserInfo] = useContext(UserDetailsContext);
   const navigate = useNavigate();
 
@@ -25,8 +24,6 @@ export const LoginPage = ({ setRoomID, roomID }) => {
   }, [setOwnUserInfo, userName, email, roomID, navigate, setRoomID]);
 
   const onEmailChange = useCallback((event) => {
-    const isEmail = /\S+@\S+\.\S+/.test(event.target.value);
-    setValid(isEmail);
     setEmail(event.target.value);
   }, []);
 
@@ -35,42 +32,34 @@ export const LoginPage = ({ setRoomID, roomID }) => {
   }, []);
 
   return (
-    <div>
-      <div className="LoginPage_heading">
-        <Typography className="LoginPage_heading" variant="h4">
-          Interview Easy
-        </Typography>
-      </div>
-      <Box className="LoginPage">
-        <TextField
-          variant="outlined"
-          label="Email ID"
-          required
-          size="small"
-          margin="normal"
-          type="email"
-          value={email}
-          onChange={onEmailChange}
-          error={!isEmailValid}
-        />
-        <TextField
-          variant="outlined"
-          label="User Name"
-          required
-          size="small"
-          margin="normal"
-          value={userName}
-          onChange={onUserNameChange}
-        />
-        <Button
-          variant="contained"
-          size="large"
-          onClick={onSubmit}
-          disabled={!userName || !email}
-        >
-          {roomID ? "Join Meeting" : "Create Meeting"}
-        </Button>
-      </Box>
-    </div>
+    <Box className="LoginPage">
+      <TextField
+        variant="outlined"
+        label="Email ID"
+        required
+        size="small"
+        margin="normal"
+        type="email"
+        value={email}
+        onChange={onEmailChange}
+      />
+      <TextField
+        variant="outlined"
+        label="User Name"
+        required
+        size="small"
+        margin="normal"
+        value={userName}
+        onChange={onUserNameChange}
+      />
+      <Button
+        variant="contained"
+        size="large"
+        onClick={onSubmit}
+        disabled={!userName || !email}
+      >
+        {roomID ? "Join Meeting" : "Create Meeting"}
+      </Button>
+    </Box>
   );
 };

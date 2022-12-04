@@ -1,6 +1,13 @@
 const app = require("express")();
 const server = require("http").createServer(app);
 const cors = require("cors");
+const { ExpressPeerServer } = require("peer");
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+});
+
+app.use(cors());
+app.use("/peerjs", peerServer);
 
 const io = require("socket.io")(server, {
   cors: {
@@ -9,7 +16,6 @@ const io = require("socket.io")(server, {
   },
 });
 
-app.use(cors());
 
 const PORT = process.env.PORT || 3001;
 
@@ -37,7 +43,6 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect-user", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
-      socket.to(roomID).emit("on-screen-sharing", false);
       delete userListByRoomID[roomId][userInfo.userName];
       io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     });
@@ -50,10 +55,6 @@ io.on("connection", (socket) => {
       console.log("onNewMessage", newMessageObj);
       messagesByRoomID[roomId].push(newMessageObj);
       io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
-    });
-
-    socket.on("on-screen-sharing", (roomID, status) => {
-      socket.to(roomID).emit("on-screen-sharing", status);
     });
   });
 });

@@ -6,18 +6,18 @@ import { initEventListeners } from "./EventListeners";
 export const SocketContext = createContext({
   messages: [],
   otherUserInfo: {},
-  isOtherUserSharingScreen: false,
+  ownUserInfo: {},
   otherUserPeerID: undefined,
 });
 
-export const socket = io("http://localhost:3001");
+//export const socket = io("http://localhost:3001");
+export const socket = io("https://interview-easy-v1-back-end.herokuapp.com");
 
 export const SocketProvider = (props) => {
   const [ownUserInfo] = useContext(UserDetailsContext);
   const [value, setValue] = useState({
     messages: [],
     otherUserInfo: {},
-    isOtherUserSharingScreen: false,
     otherUserPeerID: undefined,
   });
 

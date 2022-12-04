@@ -5,8 +5,7 @@
 }
 
 .messages {
-  height: calc(100% - 5rem);
-  overflow-y: scroll;
+  height: calc(100% - 5.5rem);
 }
 
 .message-input {
@@ -35,13 +34,4 @@
   font: 400 0.9em "Open Sans";
   border: 1px solid #dfd087;
   border-radius: 10px;
-}
-
-.chat-header {
-  padding: 10px;
-  font-weight: bold;
-  border-bottom: 1px solid grey;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
