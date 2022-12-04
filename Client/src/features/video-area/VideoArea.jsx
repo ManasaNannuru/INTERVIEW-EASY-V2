@@ -5,6 +5,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import PresentToAllIcon from "@mui/icons-material/PresentToAll";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import { Chip, IconButton } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -31,6 +32,7 @@ import { UserDetailsContext } from "../../user-context";
 import "./VideoArea.css";
 import { replaceStream } from "../../helpers";
 import { config } from "../../config";
+import { ResumeViewer } from "../resume-viewer/ResumeViewer";
 
 const myPeer = new Peer(uuid4(), {
   host: config.serverHostName,
@@ -58,6 +60,8 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
   const [screenSharingInProgress, setScreenSharingInProgress] = useState(false);
   const [ownVideoStream, setOwnVideoStream] = useState();
   const [incomingVideoStream, setIncomingVideoStream] = useState();
+  const [isResumeViewerOpen, setIsResumeViewerOpen] = useState(false);
+  const [feedbacks, setFeedbacks] = useState([]);
 
   const toggleAudio = useCallback(() => {
     ownVideoStream.getAudioTracks().forEach((audioTrack) => {
@@ -75,6 +79,14 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
 
   const onCallEndClick = useCallback(() => {
     setOpenConfirmationDialog(true);
+  }, []);
+
+  const onOpenResumeViewer = useCallback(() => {
+    setIsResumeViewerOpen(true);
+  }, []);
+
+  const onCloseResumeViewer = useCallback(() => {
+    setIsResumeViewerOpen(false);
   }, []);
 
   const handleCancelDialog = useCallback(() => {
@@ -119,6 +131,13 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
       startScreenSharing();
     }
   }, [screenSharingInProgress, startScreenSharing, stopScreenSharing]);
+
+  const onAddFeedback = useCallback(
+    (feedback) => {
+      setFeedbacks([...feedbacks, feedback]);
+    },
+    [feedbacks]
+  );
 
   useEffect(() => {
     if (roomID && ownUserInfo.userName && !streamAlreadyRequested) {
@@ -252,6 +271,15 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
         <IconButton sx={{ color: "white" }} onClick={onCallEndClick}>
           <CallEndIcon fontSize="large" />
         </IconButton>
+        {ownUserInfo.isInterviewer && (
+          <IconButton
+            sx={{ color: "white" }}
+            onClick={onOpenResumeViewer}
+            className={otherUserInfo.uid === undefined ? "disabled-icon" : ""}
+          >
+            <AssignmentIcon fontSize="large" />
+          </IconButton>
+        )}
       </div>
       <Dialog open={openConfirmationDialog} onClose={handleCancelDialog}>
         <DialogTitle>End meeting</DialogTitle>
@@ -267,6 +295,14 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {isResumeViewerOpen && (
+        <ResumeViewer
+          isOpen={isResumeViewerOpen}
+          feedbacks={feedbacks}
+          onAddFeedback={onAddFeedback}
+          onClose={onCloseResumeViewer}
+        />
+      )}
     </div>
   );
 });

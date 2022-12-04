@@ -31,9 +31,11 @@ export const initEventListeners = ({ setValue }, ownUserInfo) => {
     setValue((state) => {
       const otherUserInfo = {};
       for (let user in usersList) {
-        if (user !== ownUserInfo.userName) {
+        if (user !== `${ownUserInfo.userName}${ownUserInfo.email}`) {
           otherUserInfo.userName = user;
-          otherUserInfo.email = usersList[user];
+          otherUserInfo.email = usersList[user].email;
+          otherUserInfo.uid = usersList[user].uid;
+          otherUserInfo.isInterviewer = usersList[user].isInterviewer;
         }
       }
 

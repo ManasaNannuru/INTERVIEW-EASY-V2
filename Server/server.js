@@ -42,19 +42,39 @@ app.post("/upload", (req, res) => {
     keepExtensions: true,
   });
 
+  const userID = req.header("user-id");
+
   form.parse(req, function (error, fields, file) {
     let filepath = file.file.filepath;
-    let newpath = path.join(
-      __dirname,
-      config.default.vault,
-      file.file.originalFilename
-    );
+    let dir = path.join(__dirname, config.default.vault, userID);
+    let newpath = path.join(dir, "Resume");
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
 
     fs.rename(filepath, newpath, function () {
       res.write("File Upload Success!");
       res.end();
     });
   });
+});
+
+app.get("/resume/:userID", (req, res) => {
+  let filePath = path.join(
+    __dirname,
+    config.default.vault,
+    req.param("userID"),
+    "Resume"
+  );
+  // if (fs.(filePath)) {
+  var file = fs.createReadStream(filePath);
+  var stat = fs.statSync(filePath);
+  res.setHeader("Content-Length", stat.size);
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=Resume.pdf");
+  file.pipe(res);
+  // }
 });
 
 const userListByRoomID = {};
@@ -68,7 +88,8 @@ io.on("connection", (socket) => {
       userListByRoomID[roomId] = {};
     }
 
-    userListByRoomID[roomId][userInfo.userName] = userInfo.email;
+    userListByRoomID[roomId][`${userInfo.userName}${userInfo.email}`] =
+      userInfo;
 
     socket.join(roomId);
     socket.to(roomId).emit("user-joined", peerID, userInfo);
@@ -78,7 +99,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect-user", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
       socket.to(roomID).emit("on-screen-sharing", false);
-      delete userListByRoomID[roomId][userInfo.userName];
+      delete userListByRoomID[roomId][`${userInfo.userName}${userInfo.email}`];
       io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     });
 

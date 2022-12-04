@@ -1,1 +1,1 @@
-Welcome page is now default page
+Contains Resume viewing and adding feedback functionality
