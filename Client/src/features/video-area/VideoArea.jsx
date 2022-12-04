@@ -29,7 +29,7 @@ import {
 } from "../../socket-context/EventEmitters";
 import { UserDetailsContext } from "../../user-context";
 import "./VideoArea.css";
-import { reInitializeStream } from "../../helpers";
+import { replaceStream } from "../../helpers";
 
 const myPeer = new Peer(uuid4(), {
   host: "/",
@@ -85,20 +85,25 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
   }, [exitRoom, ownVideoStream]);
 
   const stopScreenSharing = useCallback(() => {
-    setScreenSharingInProgress(false);
-    onScreenSharing(roomID, false);
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: true,
+        video: true,
+      })
+      .then((stream) => {
+        replaceStream(otherPeer, stream);
+        onScreenSharing(roomID, false);
+      });
   }, [roomID]);
 
   const startScreenSharing = useCallback(() => {
-    reInitializeStream(false, true, ownVideoRef.current, otherPeer).then(
-      (stream) => {
-        setScreenSharingInProgress(true);
-        onScreenSharing(roomID, true);
-        stream.getVideoTracks()[0].addEventListener("ended", () => {
-          stopScreenSharing();
-        });
-      }
-    );
+    navigator.mediaDevices.getDisplayMedia().then((stream) => {
+      replaceStream(otherPeer, stream);
+      onScreenSharing(roomID, true);
+      stream.getVideoTracks()[0].addEventListener("ended", () => {
+        stopScreenSharing();
+      });
+    });
   }, [roomID, stopScreenSharing]);
 
   const toggleScreenSharing = useCallback(() => {

@@ -1,1 +1,1 @@
-Screen sharing basic functionality. Issues pending.
+End screen sharing implemented

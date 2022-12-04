@@ -1,20 +1,20 @@
-export const reInitializeStream = (video, audio, ownVideo, otherPeer) => {
+export const reInitializeStream = (otherPeer) => {
   return new Promise((resolve) => {
     navigator.mediaDevices.getDisplayMedia().then((stream) => {
-      toggleVideoTrack({ audio, video }, ownVideo);
+      // toggleVideoTrack({ audio, video }, ownVideo);
       replaceStream(otherPeer, stream);
       resolve(stream);
     });
   });
 };
 
-export const toggleVideoTrack = (status, ownVideo) => {
-  ownVideo.srcObject?.getVideoTracks().forEach((track) => {
-    if (track.kind === "video") {
-      !status.video && track.stop();
-    }
-  });
-};
+// export const toggleVideoTrack = (status, ownVideo) => {
+//   ownVideo.srcObject?.getVideoTracks().forEach((track) => {
+//     if (track.kind === "video") {
+//       !status.video && track.stop();
+//     }
+//   });
+// };
 
 export const replaceStream = (otherPeer, mediaStream) => {
   otherPeer.peerConnection?.getSenders().forEach((sender) => {
