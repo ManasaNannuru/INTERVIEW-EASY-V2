@@ -239,7 +239,7 @@ export const VideoArea = memo(
                 ? " flex-direction-column"
                 : ""
             }`}
-            style={{ width: isCodingAreaOpen ? "50%" : "100%" }}
+            style={{ width: isCodingAreaOpen ? "50%" : "100%", height: "100%" }}
           >
             <div
               className={`${

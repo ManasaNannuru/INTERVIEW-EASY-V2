@@ -122,7 +122,7 @@ export const LoginPage = ({ setRoomID, roomID }) => {
                   id="resume-upload"
                   className="resume-upload-input"
                   multiple={false}
-                  accept=".doc,.docx,.pdf"
+                  accept=".pdf"
                   onChange={addFile}
                 />
                 <label className="resume-upload-label" htmlFor="resume-upload">

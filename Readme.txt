@@ -1,1 +1,1 @@
-Synchronous text editor socket changes
+Bug fixes
