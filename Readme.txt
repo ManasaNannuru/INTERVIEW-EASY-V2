@@ -1,1 +1,1 @@
-Synchronous text editor place holder UI changes
+Synchronous text editor socket changes

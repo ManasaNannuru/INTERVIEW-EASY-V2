@@ -112,6 +112,10 @@ io.on("connection", (socket) => {
       io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
     });
 
+    socket.on("on-update-code", (newCode) => {
+      socket.to(roomId).emit("on-code-updated", newCode);
+    });
+
     socket.on("on-screen-sharing", (roomID, status) => {
       socket.to(roomID).emit("on-screen-sharing", status);
     });

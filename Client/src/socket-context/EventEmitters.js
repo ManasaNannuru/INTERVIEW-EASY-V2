@@ -15,3 +15,7 @@ export const onRoomIsReady = (roomID, peerID, userInfo) => {
 export const onScreenSharing = (roomID, status) => {
   socket.emit("on-screen-sharing", roomID, status);
 };
+
+export const updateCode = (updateCode) => {
+  socket.emit("on-update-code", updateCode);
+};
