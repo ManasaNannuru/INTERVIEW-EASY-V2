@@ -1,7 +1,6 @@
 import { CircularProgress, Divider } from "@mui/material";
 import { Box } from "@mui/system";
-import { useCallback } from "react";
-import { memo, useContext, useEffect } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { onUserDisconnect } from "../../socket-context/EventEmitters";
 import { UserDetailsContext } from "../../user-context";
@@ -14,6 +13,7 @@ export const MeetingRoom = memo(({ setRoomID }) => {
   const { roomID } = useParams();
   const navigate = useNavigate();
   const [ownUserInfo, setOwnUserInfo] = useContext(UserDetailsContext);
+  const [isCodingAreaOpen, setIsCodingAreaOpen] = useState(false);
 
   useEffect(() => {
     if (!ownUserInfo.userName || !roomID) {
@@ -29,12 +29,21 @@ export const MeetingRoom = memo(({ setRoomID }) => {
     navigate("/");
   }, [navigate, setOwnUserInfo, setRoomID]);
 
+  const toogleCodingAreaVisibility = useCallback(() => {
+    setIsCodingAreaOpen(!isCodingAreaOpen);
+  }, [isCodingAreaOpen]);
+
   return (
     <div className="meeting-room">
       {ownUserInfo.userName ? (
         <>
           <div className="video-area">
-            <VideoArea roomID={roomID} exitRoom={exitRoom} />
+            <VideoArea
+              roomID={roomID}
+              exitRoom={exitRoom}
+              toogleCodingAreaVisibility={toogleCodingAreaVisibility}
+              isCodingAreaOpen={isCodingAreaOpen}
+            />
           </div>
           <Divider
             orientation="vertical"

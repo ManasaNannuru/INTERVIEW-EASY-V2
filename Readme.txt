@@ -1,1 +1,1 @@
-Contains Resume viewing and adding feedback functionality
+Synchronous text editor place holder UI changes
