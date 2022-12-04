@@ -1,14 +1,20 @@
 const app = require("express")();
 const server = require("http").createServer(app);
 const cors = require("cors");
+const formidable = require("formidable");
+const fs = require("fs");
+const config = require("./config");
 const { ExpressPeerServer } = require("peer");
+const path = require("path");
+
 const peerServer = ExpressPeerServer(server, {
   debug: true,
   expire_timeout: 600000,
-  alive_timeout: 600000
+  alive_timeout: 600000,
 });
 
 app.use(cors());
+
 app.use("/peerjs", peerServer);
 
 const io = require("socket.io")(server, {
@@ -18,12 +24,37 @@ const io = require("socket.io")(server, {
   },
 });
 
-// app.use(cors());
+app.use(require("express").json());
 
 const PORT = process.env.PORT || 3001;
 
 app.get("/", (req, res) => {
   res.send("server is running");
+});
+
+app.post("/", (req, res) => {
+  res.send("server is running");
+});
+
+app.post("/upload", (req, res) => {
+  let form = new formidable.IncomingForm({
+    uploadDir: path.join(__dirname, config.default.vault),
+    keepExtensions: true,
+  });
+
+  form.parse(req, function (error, fields, file) {
+    let filepath = file.file.filepath;
+    let newpath = path.join(
+      __dirname,
+      config.default.vault,
+      file.file.originalFilename
+    );
+
+    fs.rename(filepath, newpath, function () {
+      res.write("File Upload Success!");
+      res.end();
+    });
+  });
 });
 
 const userListByRoomID = {};
@@ -41,12 +72,12 @@ io.on("connection", (socket) => {
 
     socket.join(roomId);
     socket.to(roomId).emit("user-joined", peerID, userInfo);
-    // socket.to(roomID).emit("on-screen-sharing", false);
     io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
 
-    socket.on("disconnect-user", () => {
+    socket.on("disconnect-user", (reason) => {
       socket.to(roomId).emit("user-disconnected", userInfo);
+      socket.to(roomID).emit("on-screen-sharing", false);
       delete userListByRoomID[roomId][userInfo.userName];
       io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     });
@@ -56,7 +87,6 @@ io.on("connection", (socket) => {
         messagesByRoomID[roomId] = [];
       }
       const newMessageObj = { message: newMessage, userName: userName };
-      console.log("onNewMessage", newMessageObj);
       messagesByRoomID[roomId].push(newMessageObj);
       io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
     });

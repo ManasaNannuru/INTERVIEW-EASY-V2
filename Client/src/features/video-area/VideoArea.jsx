@@ -29,37 +29,17 @@ import {
 } from "../../socket-context/EventEmitters";
 import { UserDetailsContext } from "../../user-context";
 import "./VideoArea.css";
-import { reInitializeStream } from "../../helpers";
-
-// const myPeer = new Peer(uuid4(), {
-//   host: "/",
-//   port: "3001",
-//   path: "peerjs"
-// });
+import { replaceStream } from "../../helpers";
+import { config } from "../../config";
 
 const myPeer = new Peer(uuid4(), {
-  host: "interview-easy-v1-back-end.herokuapp.com",
-  secure: true,
-  port: "443",
+  host: config.serverHostName,
+  secure: false,
+  port: config.serverPort,
   path: "peerjs",
   config: {
-    "iceServers": [{
-      "iceTransportPolicy": "relay", "url": "stun:global.stun.twilio.com:3478?transport=udp",
-      "urls": "stun:global.stun.twilio.com:3478?transport=udp"
-    },
-    {
-      "iceTransportPolicy": "relay", "url": "turn:global.turn.twilio.com:3478?transport=udp", "username": "015d5293a0ecb39006dd61708359c7ab196248418e4409e777c2b708590912ff",
-      "urls": "turn:global.turn.twilio.com:3478?transport=udp", "credential": "EDsTIMdiD44e2nzPlvjxWj7Ga1v7RNmDeerIBfsJ3Gw="
-    },
-    {
-      "iceTransportPolicy": "relay", "url": "turn:global.turn.twilio.com:3478?transport=tcp", "username": "015d5293a0ecb39006dd61708359c7ab196248418e4409e777c2b708590912ff",
-      "urls": "turn:global.turn.twilio.com:3478?transport=tcp", "credential": "EDsTIMdiD44e2nzPlvjxWj7Ga1v7RNmDeerIBfsJ3Gw="
-    },
-    {
-      "iceTransportPolicy": "relay", "url": "turn:global.turn.twilio.com:443?transport=tcp", "username": "015d5293a0ecb39006dd61708359c7ab196248418e4409e777c2b708590912ff",
-      "urls": "turn:global.turn.twilio.com:443?transport=tcp", "credential": "EDsTIMdiD44e2nzPlvjxWj7Ga1v7RNmDeerIBfsJ3Gw="
-    }]
-  }
+    iceServers: config.iceServers,
+  },
 });
 
 let otherPeer = null;
@@ -111,20 +91,25 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
   }, [exitRoom, ownVideoStream]);
 
   const stopScreenSharing = useCallback(() => {
-    setScreenSharingInProgress(false);
-    onScreenSharing(roomID, false);
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: true,
+        video: true,
+      })
+      .then((stream) => {
+        replaceStream(otherPeer, stream);
+        onScreenSharing(roomID, false);
+      });
   }, [roomID]);
 
   const startScreenSharing = useCallback(() => {
-    reInitializeStream(false, true, ownVideoRef.current, otherPeer).then(
-      (stream) => {
-        setScreenSharingInProgress(true);
-        onScreenSharing(roomID, true);
-        stream.getVideoTracks()[0].addEventListener("ended", () => {
-          stopScreenSharing();
-        });
-      }
-    );
+    navigator.mediaDevices.getDisplayMedia().then((stream) => {
+      replaceStream(otherPeer, stream);
+      onScreenSharing(roomID, true);
+      stream.getVideoTracks()[0].addEventListener("ended", () => {
+        stopScreenSharing();
+      });
+    });
   }, [roomID, stopScreenSharing]);
 
   const toggleScreenSharing = useCallback(() => {
@@ -205,16 +190,17 @@ export const VideoArea = memo(({ roomID, exitRoom }) => {
   return (
     <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
       <div
-        className={`videos${screenSharingInProgress ? " flex-direction-column" : ""
-          }`}
+        className={`videos${
+          screenSharingInProgress ? " flex-direction-column" : ""
+        }`}
       >
         <div
           className={
             screenSharingInProgress
               ? "top-row"
               : incomingVideoStream !== null
-                ? "video-2"
-                : "video-1"
+              ? "video-2"
+              : "video-1"
           }
         >
           <video

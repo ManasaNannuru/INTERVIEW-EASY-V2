@@ -10,8 +10,7 @@ export const SocketContext = createContext({
   otherUserPeerID: undefined,
 });
 
-// export const socket = io("http://localhost:3001");
-export const socket = io("https://interview-easy-v1-back-end.herokuapp.com");
+export const socket = io("http://localhost:3001");
 
 export const SocketProvider = (props) => {
   const [ownUserInfo] = useContext(UserDetailsContext);
