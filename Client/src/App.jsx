@@ -15,10 +15,10 @@ function App() {
       <div className="App">
         <UserDetailsProvider>
           <Routes>
-            <Route exact path="/welcome" element={<WelcomePage />} />
+            <Route exact path="/" element={<WelcomePage />} />
             <Route
               exact
-              path="/"
+              path="/login"
               element={<LoginPage setRoomID={setRoomID} roomID={roomID} />}
             />
             <Route

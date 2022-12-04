@@ -1,1 +1,1 @@
-Upload resume workflow
+Welcome page is now default page

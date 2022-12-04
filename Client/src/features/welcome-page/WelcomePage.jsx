@@ -27,7 +27,7 @@ export const WelcomePage = () => {
   }, []);
 
   const onClickingCreateMeeting = useCallback(() => {
-    navigate("/");
+    navigate("/login");
   }, [navigate]);
 
   const onJoinMeeting = useCallback(() => {

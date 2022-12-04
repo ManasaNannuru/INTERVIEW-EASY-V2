@@ -18,7 +18,7 @@ export const MeetingRoom = memo(({ setRoomID }) => {
   useEffect(() => {
     if (!ownUserInfo.userName || !roomID) {
       setRoomID(roomID);
-      navigate("/");
+      navigate("/login");
     }
   }, [navigate, ownUserInfo.userName, roomID, setRoomID]);
 

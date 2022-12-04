@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
     io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
 
-    socket.on("disconnect-user", (reason) => {
+    socket.on("disconnect-user", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
       socket.to(roomID).emit("on-screen-sharing", false);
       delete userListByRoomID[roomId][userInfo.userName];
