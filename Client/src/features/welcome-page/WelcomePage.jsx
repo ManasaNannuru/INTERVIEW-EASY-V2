@@ -9,13 +9,13 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./welcome-page.css";
-import LandingImage from './../../images/background.PNG';
+import LandingImage from "./../../images/background.PNG";
 
 export const WelcomePage = () => {
   const navigate = useNavigate();
@@ -44,20 +44,22 @@ export const WelcomePage = () => {
 
   return (
     <div className="welcome-page">
-      <div className='HomePageContainer'>
+      <div className="HomePageContainer">
         <img
-          alt='React Task board App'
-          style={{ height: '100%', width: '100%' }}
+          alt="React Task board App"
+          style={{ height: "100%", width: "100%" }}
           src={LandingImage}
         ></img>
       </div>
 
-      <div className='HomePageContainer_2'>
+      <div className="HomePageContainer_2">
         <div className="HomePageContainer_2_heading">
-          <Typography className="HomePageContainer_2_heading" variant='h3'>Interview Easy</Typography>
+          <Typography className="HomePageContainer_2_heading" variant="h3">
+            Interview Easy
+          </Typography>
         </div>
 
-        <div className='HomePageContainer_2_buttons'>
+        <div className="HomePageContainer_2_buttons">
           <Box sx={{ minWidth: 250 }} className="interviewer_card">
             <Card variant="outlined">
               <CardContent>
@@ -66,7 +68,6 @@ export const WelcomePage = () => {
                 </Typography>
                 <Typography variant="body2">
                   <br />
-
                   Go Ahead and create the interview room.
                   <br />
                 </Typography>
@@ -86,7 +87,6 @@ export const WelcomePage = () => {
                 </Typography>
                 <Typography variant="body2">
                   <br />
-
                   Go Ahead and join the interview room.
                   <br />
                 </Typography>
@@ -122,15 +122,17 @@ export const WelcomePage = () => {
         </div>
       </div>
       <Footer />
-    </div >
+    </div>
   );
 };
 
 const Footer = () => {
   return (
-    <p className="text-center" style={FooterStyle}>Copyright © 2022 Interview Easy</p>
-  )
-}
+    <p className="text-center" style={FooterStyle}>
+      Copyright © 2022 Interview Easy
+    </p>
+  );
+};
 
 const FooterStyle = {
   background: "#222",
@@ -145,5 +147,5 @@ const FooterStyle = {
   "padding-right": "0rem",
   "padding-left": "0rem",
   display: "flex",
-  "justify-content": "center"
-}
+  "justify-content": "center",
+};

@@ -11,3 +11,7 @@ export const onUserDisconnect = () => {
 export const onRoomIsReady = (roomID, peerID, userInfo) => {
   socket.emit("room-is-ready", roomID, peerID, userInfo);
 };
+
+export const onScreenSharing = (roomID, status) => {
+  socket.emit("on-screen-sharing", roomID, status);
+};

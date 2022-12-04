@@ -22,8 +22,10 @@ export const ChatArea = () => {
   }, []);
 
   const onEnter = useCallback(() => {
-    onNewMessage(message, ownUserInfo.userName);
-    setMessage("");
+    if (message) {
+      onNewMessage(message, ownUserInfo.userName);
+      setMessage("");
+    }
   }, [message, ownUserInfo]);
 
   return (
@@ -35,7 +37,9 @@ export const ChatArea = () => {
             return (
               <div
                 className={
-                  messageObj.userName === ownUserInfo.userName ? "left" : "right"
+                  messageObj.userName === ownUserInfo.userName
+                    ? "left"
+                    : "right"
                 }
               >
                 {messageObj.message}

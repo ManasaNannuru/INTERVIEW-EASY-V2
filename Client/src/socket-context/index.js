@@ -6,7 +6,7 @@ import { initEventListeners } from "./EventListeners";
 export const SocketContext = createContext({
   messages: [],
   otherUserInfo: {},
-  ownUserInfo: {},
+  isOtherUserSharingScreen: false,
   otherUserPeerID: undefined,
 });
 
@@ -17,6 +17,7 @@ export const SocketProvider = (props) => {
   const [value, setValue] = useState({
     messages: [],
     otherUserInfo: {},
+    isOtherUserSharingScreen: false,
     otherUserPeerID: undefined,
   });
 

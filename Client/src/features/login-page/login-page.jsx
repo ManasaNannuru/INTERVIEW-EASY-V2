@@ -25,7 +25,7 @@ export const LoginPage = ({ setRoomID, roomID }) => {
   }, [setOwnUserInfo, userName, email, roomID, navigate, setRoomID]);
 
   const onEmailChange = useCallback((event) => {
-    const isEmail =/\S+@\S+\.\S+/.test(event.target.value);
+    const isEmail = /\S+@\S+\.\S+/.test(event.target.value);
     setValid(isEmail);
     setEmail(event.target.value);
   }, []);
@@ -37,7 +37,9 @@ export const LoginPage = ({ setRoomID, roomID }) => {
   return (
     <div>
       <div className="LoginPage_heading">
-        <Typography className="LoginPage_heading" variant='h4'>Interview Easy</Typography>
+        <Typography className="LoginPage_heading" variant="h4">
+          Interview Easy
+        </Typography>
       </div>
       <Box className="LoginPage">
         <TextField

@@ -7,7 +7,6 @@
 .messages {
   height: calc(100% - 5rem);
   overflow-y: scroll;
-
 }
 
 .message-input {

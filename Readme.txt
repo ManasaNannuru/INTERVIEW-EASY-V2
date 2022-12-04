@@ -1,1 +1,1 @@
-Welcome page. Styles pending.
+Screen sharing basic functionality. Issues pending.

@@ -1,4 +1,3 @@
-
 .LoginPage {
   display: flex;
   flex-direction: column;
@@ -6,6 +5,7 @@
   margin: auto;
   margin-top: 2%;
 }
+
 .LoginPage_heading {
   padding: 30px;
   padding-bottom: 0px;

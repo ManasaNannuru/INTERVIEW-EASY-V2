@@ -16,12 +16,22 @@ export const ParticipantsList = () => {
       <div className="participants-header">Participants</div>
       <List className="participants-list">
         <ListItem>
-          <Avatar alt="C" src={ownUserInfo.userName ? ownUserInfo.userName.split("~")[1] : ""} />
+          <Avatar
+            alt="C"
+            src={ownUserInfo.userName ? ownUserInfo.userName.split("~")[1] : ""}
+          />
           <ListItemText primary={ownUserInfo.userName} />
         </ListItem>
-        {otherUserInfo && (
+        {otherUserInfo.userName && (
           <ListItem>
-            <Avatar alt="C" src={otherUserInfo.userName ? otherUserInfo.userName.split("~")[1] : ""} />
+            <Avatar
+              alt="C"
+              src={
+                otherUserInfo.userName
+                  ? otherUserInfo.userName.split("~")[1]
+                  : ""
+              }
+            />
             <ListItemText primary={otherUserInfo?.userName} />
           </ListItem>
         )}
