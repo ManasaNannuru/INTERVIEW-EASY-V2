@@ -24,11 +24,10 @@ export const LoginPage = ({ setRoomID, roomID }) => {
   const navigate = useNavigate();
 
   const onSubmit = useCallback(() => {
-    const userInfo = { userName, email, isInterviewer, uid: uuid4() };
+    setOwnUserInfo({ userName, email });
     if (roomID) {
-      setOwnUserInfo(userInfo);
       if (!isInterviewer) {
-        uploadResume(userInfo.uid, addedFileFormData).then(() => {
+        uploadResume({ userName, email }, addedFileFormData).then(() => {
           navigate(`/room/${roomID}`);
         });
       } else {
@@ -36,7 +35,6 @@ export const LoginPage = ({ setRoomID, roomID }) => {
       }
     } else {
       const newRoomID = uuid4();
-      setOwnUserInfo({ ...userInfo, isInterviewer: true });
       setRoomID(newRoomID);
       navigate(`/room/${newRoomID}`);
     }
@@ -122,7 +120,7 @@ export const LoginPage = ({ setRoomID, roomID }) => {
                   id="resume-upload"
                   className="resume-upload-input"
                   multiple={false}
-                  accept=".pdf"
+                  accept=".doc,.docx,.pdf"
                   onChange={addFile}
                 />
                 <label className="resume-upload-label" htmlFor="resume-upload">
