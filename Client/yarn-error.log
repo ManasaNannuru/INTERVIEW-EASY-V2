@@ -1,21 +1,30 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\10769\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js install
+  C:\Program Files\nodejs\node.exe C:\Users\SURYA_1\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add @react-pdf-viewer
 
 PATH: 
-  E:\xuniji\bin\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;D:\exe\Git\cmd;C:\Program Files\nodejs\;D:\phpstudy_pro\Extensions\php\php7.4.3nts;D:\exe;D:\exe\;C:\Program Files\dotnet\;"E:\javaee\bin\bin;E:\javaee\bin\jre\bin;";D:\sqlite\sqlite-tools-win32-x86-3390300;C:\Users\10769\AppData\Local\Microsoft\WindowsApps;D:\Microsoft VS Code\bin;C:\Users\10769\AppData\Local\GitHubDesktop\bin;C:\Users\10769\AppData\Roaming\npm;C:\Users\10769\AppData\Roaming\Composer\vendor\bin;
+  C:\Users\SURYA_1\AppData\Local\Programs\Python\Python39;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files\nodejs\;C:\Users\SURYA_1\AppData\Local\Programs\Python\Launcher\;C:\Users\SURYA_1\AppData\Local\Microsoft\WindowsApps;C:\Users\SURYA_1\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\SURYA_1\.dotnet\tools;C:\Users\SURYA_1\anaconda3\pythonw.exe;C:\Users\SURYA_1\AppData\Roaming\npm
 
 Yarn version: 
-  1.22.19
+  1.22.10
 
 Node version: 
-  16.15.1
+  16.17.0
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: connect ETIMEDOUT 104.16.21.35:443
-      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1187:16)
+  Error: https://registry.yarnpkg.com/@react-pdf-viewer: Request "https://registry.yarnpkg.com/@react-pdf-viewer" returned a 405
+      at Request.params.callback [as _callback] (C:\Users\SURYA_1\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66997:18)
+      at Request.self.callback (C:\Users\SURYA_1\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140662:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (C:\Users\SURYA_1\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141634:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (C:\Users\SURYA_1\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141556:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1358:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
   {
@@ -68,7 +77,8 @@ npm manifest:
     },
     "engines": {
       "node": "16.x"
-    }
+    },
+    "proxy": "http://localhost:3000"
   }
 
 yarn manifest: 

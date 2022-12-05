@@ -19,6 +19,11 @@
   width: 100%;
 }
 
+.height-50 {
+  height: 50%;
+  width: 100%;
+}
+
 .flex-direction-column {
   flex-direction: column !important;
 }

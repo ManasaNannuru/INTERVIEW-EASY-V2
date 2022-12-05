@@ -6,7 +6,7 @@ const fs = require("fs");
 const config = require("./config");
 const { ExpressPeerServer } = require("peer");
 const path = require("path");
-const getcoderouter = require('./email/index')
+const nodemailer = require("nodemailer");
 
 const peerServer = ExpressPeerServer(server, {
   debug: true,
@@ -36,23 +36,23 @@ app.get("/", (req, res) => {
 app.post("/", (req, res) => {
   res.send("server is running");
 });
-app.get("/sendemail/:email/:text",(req,res)=>{
-  // res.send(req.params);
-  getcoderouter.test(req.params.email,req.params.text);
-})
+
 app.post("/upload", (req, res) => {
   let form = new formidable.IncomingForm({
     uploadDir: path.join(__dirname, config.default.vault),
     keepExtensions: true,
   });
 
+  const userID = req.header("user-id");
+
   form.parse(req, function (error, fields, file) {
     let filepath = file.file.filepath;
-    let newpath = path.join(
-      __dirname,
-      config.default.vault,
-      file.file.originalFilename
-    );
+    let dir = path.join(__dirname, config.default.vault, userID);
+    let newpath = path.join(dir, "Resume");
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
 
     fs.rename(filepath, newpath, function () {
       res.write("File Upload Success!");
@@ -60,6 +60,75 @@ app.post("/upload", (req, res) => {
     });
   });
 });
+
+app.get("/resume/:userID", (req, res) => {
+  let filePath = path.join(
+    __dirname,
+    config.default.vault,
+    req.param("userID"),
+    "Resume"
+  );
+
+  var file = fs.createReadStream(filePath);
+  var stat = fs.statSync(filePath);
+  res.setHeader("Content-Length", stat.size);
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=Resume.pdf");
+  file.pipe(res);
+});
+
+const exportAll = (userListByRoomID, messages) => {
+  let interviewer = {};
+  let interviewee = {};
+  for (const key in userListByRoomID) {
+    const user = userListByRoomID[key];
+    if (user.isInterviewer) interviewer = user;
+    else interviewee = user;
+  }
+
+  const sender = nodemailer.createTransport({
+    host: "smtp.office365.com",
+    port: "587",
+    secure: false,
+    auth: {
+      user: "intervieweazy@outlook.com",
+      pass: "JustF0rFun",
+    },
+  });
+
+  const resumeAttachment = {
+    filename: "Resume.pdf",
+    path: path.join(__dirname, config.default.vault, interviewee.uid, "Resume"),
+  };
+
+  let messageContent = "";
+
+  messages.forEach((messageObj) => {
+    messageContent += `${messageObj.userName}: ${messageObj.message}
+    `;
+  });
+
+  const chatAttachment = {
+    filename: "chat.txt",
+    content: messageContent,
+  };
+
+  var mail = {
+    from: "intervieweazy@outlook.com",
+    to: interviewer.email,
+    subject: `Interview with ${interviewee.userName}`,
+    attachments: [resumeAttachment, chatAttachment],
+    text: "Attached the details of the interview",
+  };
+
+  sender.sendMail(mail, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent successfully: " + info.response);
+    }
+  });
+};
 
 const userListByRoomID = {};
 const messagesByRoomID = {};
@@ -72,7 +141,8 @@ io.on("connection", (socket) => {
       userListByRoomID[roomId] = {};
     }
 
-    userListByRoomID[roomId][userInfo.userName] = userInfo.email;
+    userListByRoomID[roomId][`${userInfo.userName}${userInfo.email}`] =
+      userInfo;
 
     socket.join(roomId);
     socket.to(roomId).emit("user-joined", peerID, userInfo);
@@ -82,7 +152,8 @@ io.on("connection", (socket) => {
     socket.on("disconnect-user", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
       socket.to(roomId).emit("on-screen-sharing", false);
-      delete userListByRoomID[roomId][userInfo.userName];
+      exportAll(userListByRoomID[roomId], messagesByRoomID[roomId]);
+      delete userListByRoomID[roomId][`${userInfo.userName}${userInfo.email}`];
       io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     });
 
@@ -95,8 +166,12 @@ io.on("connection", (socket) => {
       io.in(roomId).emit("list-of-messages", messagesByRoomID[roomId]);
     });
 
-    socket.on("on-screen-sharing", (roomId, status) => {
-      socket.to(roomId).emit("on-screen-sharing", status);
+    socket.on("on-update-code", (newCode) => {
+      socket.to(roomId).emit("on-code-updated", newCode);
+    });
+
+    socket.on("on-screen-sharing", (roomID, status) => {
+      socket.to(roomID).emit("on-screen-sharing", status);
     });
   });
 });

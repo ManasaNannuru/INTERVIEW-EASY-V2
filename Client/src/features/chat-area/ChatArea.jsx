@@ -38,8 +38,8 @@ export const ChatArea = () => {
               <div
                 className={
                   messageObj.userName === ownUserInfo.userName
-                    ? "left"
-                    : "right"
+                    ? "right"
+                    : "left"
                 }
               >
                 {messageObj.message}
@@ -54,11 +54,7 @@ export const ChatArea = () => {
           onSubmit={onEnter}
           endAdornment={
             <InputAdornment>
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={onEnter}
-                edge="end"
-              >
+              <IconButton onClick={onEnter} edge="end">
                 <SendRoundedIcon />
               </IconButton>
             </InputAdornment>

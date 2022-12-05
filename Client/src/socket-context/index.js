@@ -8,6 +8,7 @@ export const SocketContext = createContext({
   otherUserInfo: {},
   isOtherUserSharingScreen: false,
   otherUserPeerID: undefined,
+  code: "",
 });
 
 export const socket = io("http://localhost:3001");
@@ -19,6 +20,7 @@ export const SocketProvider = (props) => {
     otherUserInfo: {},
     isOtherUserSharingScreen: false,
     otherUserPeerID: undefined,
+    code: "",
   });
 
   useEffect(() => {

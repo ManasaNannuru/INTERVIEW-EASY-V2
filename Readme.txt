@@ -1,1 +1,1 @@
-Added exporting text to send email files
+Contains sending mail implementation with resume and chat attachments
