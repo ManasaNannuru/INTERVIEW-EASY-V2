@@ -213,6 +213,12 @@ export const VideoArea = memo(
       }
     }, [incomingVideoStream]);
 
+    useEffect(() => {
+      if (isOtherUserSharingScreen) {
+        stopScreenSharing();
+      }
+    }, [isOtherUserSharingScreen, stopScreenSharing]);
+
     return (
       <div
         style={{
@@ -253,7 +259,7 @@ export const VideoArea = memo(
               }`}
             >
               <video
-                style={{ width: "100%", height: "100%" }}
+                className="video-element"
                 ref={ownVideoRef}
                 playsInline
                 autoPlay
@@ -268,7 +274,7 @@ export const VideoArea = memo(
                 }${isCodingAreaOpen ? " height-50" : ""}`}
               >
                 <video
-                  style={{ width: "100%", height: "100%" }}
+                  className="video-element"
                   ref={incomingVideoRef}
                   playsInline
                   autoPlay

@@ -1,6 +1,3 @@
-Following issues fixed
-
-microphone issue (IMPORTANT)
-screen-share stop button not working
--> Mirror video
-scroll down to new message in live chat
+Bug fixes
+ - Stop screen sharing on other user screen share start
+ - Texts and all flipping in video area fix
