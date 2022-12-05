@@ -1,12 +1,13 @@
 import { socket } from ".";
-
+import {  useCallback } from "react";
+var messageListInfoS="";
 export const initEventListeners = ({ setValue }, ownUserInfo) => {
   socket.on("list-of-messages", (listOfMessages) => {
+    messageListInfoS=listOfMessages;
     setValue((state) => {
       return { ...state, messages: listOfMessages };
     });
   });
-
   socket.on("user-joined", (peerID, userInfo) => {
     setValue((state) => {
       return {
@@ -31,11 +32,9 @@ export const initEventListeners = ({ setValue }, ownUserInfo) => {
     setValue((state) => {
       const otherUserInfo = {};
       for (let user in usersList) {
-        if (user !== `${ownUserInfo.userName}${ownUserInfo.email}`) {
-          otherUserInfo.userName = usersList[user].userName;
-          otherUserInfo.email = usersList[user].email;
-          otherUserInfo.uid = usersList[user].uid;
-          otherUserInfo.isInterviewer = usersList[user].isInterviewer;
+        if (user !== ownUserInfo.userName) {
+          otherUserInfo.userName = user;
+          otherUserInfo.email = usersList[user];
         }
       }
 
@@ -48,10 +47,8 @@ export const initEventListeners = ({ setValue }, ownUserInfo) => {
       return { ...state, isOtherUserSharingScreen };
     });
   });
-
-  socket.on("on-code-updated", (newCode) => {
-    setValue((state) => {
-      return { ...state, code: newCode };
-    });
-  });
 };
+export const getChart=()=>{
+  return messageListInfoS;
+}
+
