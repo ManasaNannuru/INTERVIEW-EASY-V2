@@ -17,6 +17,9 @@
   flex-direction: row;
   height: calc(100% - 5rem);
   width: 100%;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+  -moz-transform: rotateY(180deg);
 }
 
 .height-50 {

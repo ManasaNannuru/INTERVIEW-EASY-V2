@@ -11,6 +11,7 @@ import { useContext } from "react";
 import { SocketContext } from "../../socket-context";
 import { onNewMessage } from "../../socket-context/EventEmitters";
 import { UserDetailsContext } from "../../user-context";
+import { useEffect } from "react";
 
 export const ChatArea = () => {
   const { messages } = useContext(SocketContext);
@@ -28,11 +29,16 @@ export const ChatArea = () => {
     }
   }, [message, ownUserInfo]);
 
+  useEffect(() => {
+    let elem = document.getElementById("messages");
+    elem.scrollTop = elem.scrollHeight;
+  }, [messages]);
+
   return (
     <>
       <div className="chat-header">Chat</div>
       <Paper className="chat-area">
-        <div className="messages">
+        <div className="messages" id="messages">
           {messages?.map((messageObj) => {
             return (
               <div

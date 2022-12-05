@@ -115,6 +115,7 @@ export const VideoArea = memo(
         .then((stream) => {
           replaceStream(otherPeer, stream);
           onScreenSharing(roomID, false);
+          setScreenSharingInProgress(false);
         });
     }, [roomID]);
 
@@ -122,6 +123,7 @@ export const VideoArea = memo(
       navigator.mediaDevices.getDisplayMedia().then((stream) => {
         replaceStream(otherPeer, stream);
         onScreenSharing(roomID, true);
+        setScreenSharingInProgress(true);
         stream.getVideoTracks()[0].addEventListener("ended", () => {
           stopScreenSharing();
         });
@@ -211,10 +213,6 @@ export const VideoArea = memo(
       }
     }, [incomingVideoStream]);
 
-    useEffect(() => {
-      setScreenSharingInProgress(isOtherUserSharingScreen);
-    }, [isOtherUserSharingScreen]);
-
     return (
       <div
         style={{
@@ -234,35 +232,40 @@ export const VideoArea = memo(
         >
           {isCodingAreaOpen && <CodingArea />}
           <div
-            className={`videos${screenSharingInProgress || isCodingAreaOpen
-              ? " flex-direction-column"
-              : ""
-              }`}
+            className={`videos${
+              isOtherUserSharingScreen || isCodingAreaOpen
+                ? " flex-direction-column"
+                : ""
+            }`}
             style={{ width: isCodingAreaOpen ? "50%" : "100%", height: "100%" }}
           >
             <div
-              className={`${screenSharingInProgress
-                ? "top-row"
-                : incomingVideoStream !== null
+              className={`${
+                isOtherUserSharingScreen
+                  ? "top-row"
+                  : incomingVideoStream !== null
                   ? "video-2"
                   : "video-1"
-                }${isCodingAreaOpen && incomingVideoStream !== null
+              }${
+                isCodingAreaOpen && incomingVideoStream !== null
                   ? " height-50"
                   : ""
-                }`}
+              }`}
             >
               <video
                 style={{ width: "100%", height: "100%" }}
                 ref={ownVideoRef}
                 playsInline
                 autoPlay
+                muted="muted"
               ></video>
               <Chip className="user-info" label={ownUserInfo.userName} />
             </div>
             {incomingVideoStream !== null && (
               <div
-                className={`${screenSharingInProgress ? "bottom-row" : "video-2"
-                  }${isCodingAreaOpen ? " height-50" : ""}`}
+                className={`${
+                  isOtherUserSharingScreen ? "bottom-row" : "video-2"
+                }${isCodingAreaOpen ? " height-50" : ""}`}
               >
                 <video
                   style={{ width: "100%", height: "100%" }}

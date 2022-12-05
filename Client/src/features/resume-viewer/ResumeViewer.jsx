@@ -7,7 +7,7 @@ import {
   OutlinedInput,
   Paper,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { SpecialZoomLevel, Viewer, Worker } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { useState, useContext } from "react";
@@ -20,8 +20,13 @@ import "./ResumeViewer.css";
 import { updateFeedback } from "../../requestHelper";
 import { UserDetailsContext } from "../../user-context";
 
-
-export const ResumeViewer = ({ isOpen, onClose, feedbacks, onAddFeedback, roomID }) => {
+export const ResumeViewer = ({
+  isOpen,
+  onClose,
+  feedbacks,
+  onAddFeedback,
+  roomID,
+}) => {
   const { otherUserInfo } = useContext(SocketContext);
   const [ownUserInfo] = useContext(UserDetailsContext);
   const [feedback, setFeedback] = useState("");
@@ -35,8 +40,8 @@ export const ResumeViewer = ({ isOpen, onClose, feedbacks, onAddFeedback, roomID
     updateFeedback(ownUserInfo.uid, roomID, feedback).then(() => {
       onAddFeedback(feedback);
       setFeedback("");
-    })
-  }, [feedback, onAddFeedback]);
+    });
+  }, [feedback, onAddFeedback, ownUserInfo.uid, roomID]);
 
   return (
     <Dialog
@@ -44,13 +49,14 @@ export const ResumeViewer = ({ isOpen, onClose, feedbacks, onAddFeedback, roomID
       onClose={onClose}
       classes={{ paper: "resume-viewer" }}
     >
-      <DialogTitle>Resume
+      <DialogTitle>
+        Resume
         {onClose ? (
           <IconButton
             aria-label="close"
             onClick={onClose}
             sx={{
-              position: 'absolute',
+              position: "absolute",
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
