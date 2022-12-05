@@ -259,7 +259,7 @@ export const VideoArea = memo(
               }`}
             >
               <video
-                className="video-element"
+                className="video-element reverse"
                 ref={ownVideoRef}
                 playsInline
                 autoPlay
@@ -274,7 +274,11 @@ export const VideoArea = memo(
                 }${isCodingAreaOpen ? " height-50" : ""}`}
               >
                 <video
-                  className="video-element"
+                  className={
+                    isOtherUserSharingScreen
+                      ? "video-element"
+                      : "video-element reverse"
+                  }
                   ref={incomingVideoRef}
                   playsInline
                   autoPlay
