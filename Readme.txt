@@ -1,2 +1,1 @@
-Welcome page is now default page
-Procfile is added
+Added exporting text to send email files
