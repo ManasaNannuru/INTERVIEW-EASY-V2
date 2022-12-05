@@ -22,11 +22,13 @@
   border: dotted gray;
   width: 54%;
   height: 2.5rem;
-  margin-bottom: 0.5rem;
   display: flex;
   justify-content: space-around;
   align-items: center;
   cursor: pointer;
+  margin: auto;
+  margin-bottom: 0.5rem;
+  margin-right: 0;
 }
 
 .resume-upload-input {

@@ -63,9 +63,9 @@ export const WelcomePage = () => {
           <Box sx={{ minWidth: 250 }} className="interviewer_card">
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="h5" component="div">
+                {/* <Typography variant="h5" component="div">
                   Interviewer ?
-                </Typography>
+                </Typography> */}
                 <Typography variant="body2">
                   <br />
                   Go Ahead and create the interview room.
@@ -82,9 +82,9 @@ export const WelcomePage = () => {
           <Box sx={{ minWidth: 250 }} className="interviewee_card">
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="h5" component="div">
-                  Interviewee ?
-                </Typography>
+                {/* <Typography variant="h5" component="div">
+                  Interview Scheduled?
+                </Typography> */}
                 <Typography variant="body2">
                   <br />
                   Go Ahead and join the interview room.

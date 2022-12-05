@@ -73,6 +73,17 @@ app.get("/resume/:userID", (req, res) => {
   retrieveFile(filename, res);
 });
 
+let feedBackByRoomID = {};
+
+app.post("/updateFeedback", (req, res) => {
+  const userID = req.header("user-id");
+  if (!feedBackByRoomID[req.body.roomID]) {
+    feedBackByRoomID[req.body.roomID] = [];
+  }
+  feedBackByRoomID[req.body.roomID].push(req.body.feedback)
+  return res.send({ success: true });
+});
+
 function uploadFile(source, targetName, userID, res) {
   console.log("preparing to upload...");
   fs.readFile(source, (err, filedata) => {
@@ -115,80 +126,65 @@ function retrieveFile(filename, res) {
   });
 }
 
-/* app.post("/upload", (req, res) => {
-  let form = new formidable.IncomingForm({
-    uploadDir: path.join(__dirname, config.default.vault),
-    keepExtensions: true,
-  });
-
-  const userID = req.header("user-id");
-
-  form.parse(req, function (error, fields, file) {
-    let filepath = file.file.filepath;
-    let dir = path.join(__dirname, config.default.vault, userID);
-    let newpath = path.join(dir, "Resume");
-
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    fs.rename(filepath, newpath, function () {
-      res.write("File Upload Success!");
-      res.end();
-    });
-  });
-}); */
-
-/* app.get("/resume/:userID", (req, res) => {
-  let filePath = path.join(
-    __dirname,
-    config.default.vault,
-    req.param("userID"),
-    "Resume"
-  );
-  // if (fs.(filePath)) {
-  var file = fs.createReadStream(filePath);
-  var stat = fs.statSync(filePath);
-  res.setHeader("Content-Length", stat.size);
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", "attachment; filename=Resume.pdf");
-  file.pipe(res);
-  // }
-}); */
-
-const exportAll = (userListByRoomID, messagesByRoomID) => {
+const exportAll = (userListByRoomID, messages, feedbacks) => {
+  console.log("here");
   let interviewer = {};
   let interviewee = {};
   for (const key in userListByRoomID) {
-    const user = userListByRoomID[user];
+    const user = userListByRoomID[key];
     if (user.isInterviewer) interviewer = user;
     else interviewee = user;
   }
 
   const sender = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.office365.com",
+    port: "587",
+    // secure: true,
+    secureConnection: false,
     auth: {
-      user: "noreplyintervieweasy@gmail.com",
+      user: "intervieweazy@outlook.com",
       pass: "JustF0rFun",
     },
+    tls: {
+      ciphers: 'SSLv3'
+    }
+  });
+  const s3Url = `https://interview-easy.s3.amazonaws.com/uploads/${interviewee.uid}/Resume.pdf`;
+  console.log(s3Url);
+  //path.join(__dirname, config.default.vault, interviewee.uid, "Resume")
+  const resumeAttachment = {
+    filename: "Resume.pdf",
+    path: s3Url,
+  };
+
+  let messageContent = "";
+
+  messages?.forEach((messageObj) => {
+    messageContent += `${messageObj.userName}: ${messageObj.message}
+    `;
   });
 
+  let feedBackContent = "";
+
+  feedbacks?.forEach((feedBack) => {
+    feedBackContent += `${feedBack}
+    `;
+  });
+
+  const chatAttachment = {
+    filename: "chat.txt",
+    content: messageContent,
+  };
+
+  const feedBackAttachment = {
+    filename: "candidateFeedback.txt",
+    content: feedBackContent,
+  };
   var mail = {
-    from: "no-reply-interview-easy@gmail.com",
+    from: "intervieweazy@outlook.com",
     to: interviewer.email,
     subject: `Interview with ${interviewee.userName}`,
-    attachments: [
-      {
-        filename: "Resume.pdf",
-        path: path.join(
-          __dirname,
-          config.default.vault,
-          intervieweeUID,
-          "Resume"
-        ),
-        cid: "Resume.pdf",
-      },
-    ],
+    attachments: [resumeAttachment, chatAttachment, feedBackAttachment],
     text: "Attached the details of the interview",
   };
 
@@ -223,7 +219,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect-user", () => {
       socket.to(roomId).emit("user-disconnected", userInfo);
       socket.to(roomId).emit("on-screen-sharing", false);
-      // exportAll(userListByRoomID[roomId], messagesByRoomID[roomId]);
+      exportAll(userListByRoomID[roomId], messagesByRoomID[roomId], feedBackByRoomID[roomId]);
       delete userListByRoomID[roomId][`${userInfo.userName}${userInfo.email}`];
       io.in(roomId).emit("list-of-users", userListByRoomID[roomId]);
     });
@@ -242,7 +238,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("on-screen-sharing", (roomID, status) => {
-      socket.to(roomId).emit("on-screen-sharing", status);
+      socket.to(roomID).emit("on-screen-sharing", status);
     });
   });
 });

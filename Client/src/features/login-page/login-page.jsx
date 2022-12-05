@@ -113,7 +113,7 @@ export const LoginPage = ({ setRoomID, roomID }) => {
                   onChange={onInterviewerCheckboxChange}
                 />
               }
-              label="Joining interview?"
+              label="Interviewee"
             />
             {!isInterviewer && (
               <div className="resume-upload-area">

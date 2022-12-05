@@ -11,9 +11,9 @@ export const SocketContext = createContext({
   code: "",
 });
 
-//export const socket = io("http://localhost:3001");
-//export const socket = io("https://interview-easy-v1-back-end.herokuapp.com");
-export const socket = io("https://interview-easy-back.herokuapp.com");
+// export const socket = io("http://localhost:3001");
+export const socket = io("https://interview-easy-v1-back-end.herokuapp.com");
+//export const socket = io("https://interview-easy-back.herokuapp.com");
 
 export const SocketProvider = (props) => {
   const [ownUserInfo] = useContext(UserDetailsContext);

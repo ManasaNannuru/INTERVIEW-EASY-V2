@@ -12,10 +12,24 @@
   max-width: unset !important;
   padding: 0 !important;
 }
+.feedback-header {
+  padding: 19px;
+  text-align: center;
+  /* color: white; */
+  font-size: 17px;
+  font-weight: 500;
+  background-color: #F4F4F5;
+  box-shadow: 0px 3px 15px rgba(0,0,0,0.2);
+}
 
 .resume {
-  height: 100%;
+  height: calc(100%-5rem);
   width: 950px;
+}
+.messages_feedback {
+  height: calc(100% - 8.4rem);
+  padding:8px
+  /* overflow-y: scroll; */
 }
 
 .feedback-area {

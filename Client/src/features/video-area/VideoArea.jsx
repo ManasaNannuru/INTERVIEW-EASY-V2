@@ -234,25 +234,22 @@ export const VideoArea = memo(
         >
           {isCodingAreaOpen && <CodingArea />}
           <div
-            className={`videos${
-              screenSharingInProgress || isCodingAreaOpen
-                ? " flex-direction-column"
-                : ""
-            }`}
+            className={`videos${screenSharingInProgress || isCodingAreaOpen
+              ? " flex-direction-column"
+              : ""
+              }`}
             style={{ width: isCodingAreaOpen ? "50%" : "100%", height: "100%" }}
           >
             <div
-              className={`${
-                screenSharingInProgress
-                  ? "top-row"
-                  : incomingVideoStream !== null
+              className={`${screenSharingInProgress
+                ? "top-row"
+                : incomingVideoStream !== null
                   ? "video-2"
                   : "video-1"
-              }${
-                isCodingAreaOpen && incomingVideoStream !== null
+                }${isCodingAreaOpen && incomingVideoStream !== null
                   ? " height-50"
                   : ""
-              }`}
+                }`}
             >
               <video
                 style={{ width: "100%", height: "100%" }}
@@ -264,9 +261,8 @@ export const VideoArea = memo(
             </div>
             {incomingVideoStream !== null && (
               <div
-                className={`${
-                  screenSharingInProgress ? "bottom-row" : "video-2"
-                }${isCodingAreaOpen ? " height-50" : ""}`}
+                className={`${screenSharingInProgress ? "bottom-row" : "video-2"
+                  }${isCodingAreaOpen ? " height-50" : ""}`}
               >
                 <video
                   style={{ width: "100%", height: "100%" }}
@@ -346,6 +342,7 @@ export const VideoArea = memo(
             feedbacks={feedbacks}
             onAddFeedback={onAddFeedback}
             onClose={onCloseResumeViewer}
+            roomID={roomID}
           />
         )}
       </div>
