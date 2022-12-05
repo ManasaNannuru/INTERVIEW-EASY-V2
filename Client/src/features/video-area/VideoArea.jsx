@@ -38,7 +38,7 @@ import "./VideoArea.css";
 
 const myPeer = new Peer(uuid4(), {
   host: config.serverHostName,
-  secure: false,
+  secure: true,
   port: config.serverPort,
   path: "peerjs",
   config: {

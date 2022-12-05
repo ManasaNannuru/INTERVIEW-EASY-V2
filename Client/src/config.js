@@ -30,6 +30,9 @@ export const config = {
       credential: "EDsTIMdiD44e2nzPlvjxWj7Ga1v7RNmDeerIBfsJ3Gw=",
     },
   ],
-  serverHostName: "localhost",
-  serverPort: "3001",
+  //serverHostName: "localhost",
+  //serverPort: "3001",
+  serverHostName: "interview-easy-back.herokuapp.com",
+  //serverHostName: "interview-easy-v1-back-end.herokuapp.com",
+  serverPort: "443",
 };

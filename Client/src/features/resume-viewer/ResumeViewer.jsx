@@ -17,6 +17,7 @@ import { SocketContext } from "../../socket-context";
 import { useCallback } from "react";
 import "./ResumeViewer.css";
 
+
 export const ResumeViewer = ({ isOpen, onClose, feedbacks, onAddFeedback }) => {
   const { otherUserInfo } = useContext(SocketContext);
   const [feedback, setFeedback] = useState("");
@@ -43,7 +44,9 @@ export const ResumeViewer = ({ isOpen, onClose, feedbacks, onAddFeedback }) => {
           <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.0.279/build/pdf.worker.min.js">
             <Viewer
               plugins={[defaultLayoutPluginInstance]}
-              fileUrl={`http://localhost:3001/resume/${otherUserInfo.uid}`}
+              //fileUrl={`http://localhost:3001/resume/${otherUserInfo.uid}`}
+              //fileUrl={`https://interview-easy-v1-back-end.herokuapp.com/resume/${otherUserInfo.uid}`}
+              fileUrl={`https://interview-easy-back.herokuapp.com/resume/${otherUserInfo.uid}`}
               initialPage={0}
               defaultScale={SpecialZoomLevel.PageWidth}
             />
